@@ -125,7 +125,7 @@ def nn1(X, k=None):
 
   ##########################################
 
-  c = nn.train(X, X, num_iter=100000, alpha=1e-8, verbose=True)
+  c = nn.train(X, X, num_iter=1000000, alpha=1e-8, verbose=True)
   nn.save_theta('../saves/nn1_theta.npy')
 
   ##########################################
@@ -133,7 +133,7 @@ def nn1(X, k=None):
   import matplotlib.pyplot as plt
   plt.figure()
   plt.plot(c)
-  savefig('../saves/nn1_cost')
+  plt.savefig('../saves/nn1_cost')
 
   ##########################################
 
