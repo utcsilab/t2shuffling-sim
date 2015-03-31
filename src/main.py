@@ -7,6 +7,7 @@ from os         import system
 from models     import models_dict
 from cfl        import readcfl, writecfl, cfl2sqcfl, sqcfl2mat, mat2sqcfl
 from metrics    import get_metric
+from plot       import plot_simulation, plot_cfl_signals
 
 
 import numpy as np
@@ -14,6 +15,8 @@ import scipy.io as sio
 
 
 load_FSEpath = "../data/FSEmatrix.mat"
+cfl_path = "../basis/"
+time_stamp = ""
 
 
 parser = OptionParser()
@@ -30,17 +33,19 @@ parser.add_option("--k", dest="k", type=int, default=None, help="Number of basis
 parser.add_option("--model", dest="model", type=str, default='all', help="The model you want to test")
 parser.add_option("--add_control", dest="add_control", action="store_true", default=False, help="Set this flag if you want to compare said model with svd")
 parser.add_option("--save_cfl", dest="save_cfl", action="store_true", default=False, help="Set this flag if you want to save cfl")
-#parser.add_option("--save_plots", dest="save_plots", action="store_true", default=False, help="Set this flag to save plots")
-#parser.add_option("--save_imgs", dest="save_imgs", action="store_true", default=False, help="Set this flag to save imgimgss")
-parser.add_option("--make_comparisson", dest="do_comp", action="store_true", default=False, help="Set this flag if you want to generate gifs")
+parser.add_option("--save_plots", dest="save_plots", action="store_true", default=False, help="Set this flag to save plots")
+parser.add_option("--save_imgs", dest="save_imgs", action="store_true", default=False, help="Set this flag to save imgimgss")
 
 
 options, args = parser.parse_args()
 
-cfl_path = "../basis/"
-time_stamp = ""
 
-assert options.cfl or options.angles, "Please pass in a cfl file OR an angles file."""
+assert (options.cfl or options.angles) and (options.cfl != options.angles), "Please pass in a cfl file XOR an angles file."""
+
+
+if options.save_imgs:
+  assert options.cfl, "In order to save images, a cfl file must be passed instead of values for a simulation."""
+
 
 if options.cfl:
 
@@ -83,17 +88,18 @@ else:
   else:
     X = gen_FSEmatrix(N, angles, ETL, e2s, TE, T1vals, T2vals)
     sio.savemat(data_path + "FSEmatrix", {"FSEmatrix": X})
-  # TODO: add image dimension
+
 
 lst = [options.model]
 if options.add_control:
-  lst.append['simple_svd']
+  lst.append('simple_svd')
 if options.model == 'all':
   lst = models.keys()
 results = {}
 for m in lst:
-  print "[--------------------------------------------------]"
+  print "------------------------------------------------------------"
   print "Running " + m
+  print "------------------------------------------------------------"
   model = models_dict[m]
   k = options.k
   U, alpha, X_hat = model(X, options.k)
@@ -101,11 +107,23 @@ for m in lst:
   pnorm, fro_perc_err = get_metric(X, X_hat)
   if not k:
     k = U.shape[1]
-  results[m] = {'U':U, 'alpha':alpha, 'k':k, 'Percentage Error per Signal': pnorm, 'Frobenius Percentage Error': fro_perc_err}
-  if options.do_comp:
-    # TODO
-    None
-  print "[--------------------------------------------------]"
+  results[m] = {'U':U, 'alpha':alpha, 'k':k, 'X_hat': X_hat, 'Percentage Error per Signal': pnorm, 'Frobenius Percentage Error': fro_perc_err}
+print "------------------------------------------------------------"
+
+
+if options.save_plots:
+  for m in lst:
+    mod = results[m]
+    if options.cfl:
+      plot_cfl_signals(mod['U'], options.k, X, mod['X_hat'], m, e2s)
+    else:
+      plot_simulation(mod['U'], options.k, X, mod['X_hat'], m, T1vals, T2vals, e2s)
+
+
+if options.save_imgs:
+  # TODO
+  None
+
 
 if options.save_cfl:
   for m in results.keys():

@@ -14,6 +14,16 @@ class NN_simple:
       prev, curr = nodes_per_layer[i-1], nodes_per_layer[i]
       self.theta_lst.append(np.matrix(np.random.rand(curr, prev), dtype=np.complex64))
 
+  def load_theta(self, theta_path):
+    """ This assumes that theta list is saved as an npy file """
+    theta_lst = np.load(theta_path)
+    for i in range(len(theta_lst)):
+      self.theta_lst[i] = theta_lst[i]
+
+  def save_thata(self, path):
+    """ This saves the theta_lst as an npy """
+    np.save(path, np.array(self.theta_lst)) 
+
   def train(self, X, y, alpha=0.3, num_iter=100, verbose=False):
     c = [self.cost(X, y)]
     if verbose:
@@ -36,7 +46,7 @@ class NN_simple:
 
   def cost(self, X, y):
     h = self.get_activation_layers(X)[-1]
-    return np.linalg.norm(h - y, ord=2)**2
+    return np.linalg.norm(y - h, 'fro')/np.linalg.norm(y, 'fro') * 100
 
   def theta_gradients(self, X, y):
     activation_layers = self.get_activation_layers(X)

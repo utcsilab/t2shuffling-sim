@@ -115,10 +115,27 @@ models_dict["scale_col_with_power"] = scale_col_with_power
 
 
 def nn1(X, k=None):
-  nn = NN_simple([X.shape[0], 5, 3, X.shape[0]])
-  c = nn.train(X, X, num_iter=1000, alpha=0.000001, verbose=True)
+  if k is None:
+    k = 3
+  nn = NN_simple([X.shape[0], k, X.shape[0]])
+  
+  ##########################################
+
+  #nn.load_theta('../saves/nn1_theta.npy')
+
+  ##########################################
+
+  c = nn.train(X, X, num_iter=100000, alpha=1e-8, verbose=True)
+  nn.save_theta('../saves/nn1_theta.npy')
+
+  ##########################################
+
   a = nn.get_activation_layers(X)
-  return nn.theta_lst[-1], a[-2], a[-2] * nn.theta_lst[1]
+  import matplotlib.pyplot as plt
+  plt.figure()
+  plt.plot(c)
+  plt.show()
+  return nn.theta_lst[-1], a[-2], nn.theta_lst[-1] * a[-2]
 
 models_dict["nn1"] = nn1
 
