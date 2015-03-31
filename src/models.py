@@ -115,10 +115,8 @@ models_dict["scale_col_with_power"] = scale_col_with_power
 
 
 def nn1(X, k=None):
-  #scales = np.diag(1/np.linalg.norm(X, ord=3, axis=0)**2.5)
-  #Xhat = X * scales
-  nn = NN_simple([X.shape[0], 3, X.shape[0]])
-  c = nn.train(Xhat, X, num_iter=1000, alpha=0.000001, verbose=True)
+  nn = NN_simple([X.shape[0], 5, 3, X.shape[0]])
+  c = nn.train(X, X, num_iter=1000, alpha=0.000001, verbose=True)
   a = nn.get_activation_layers(X)
   return nn.theta_lst[-1], a[-2], a[-2] * nn.theta_lst[1]
 
