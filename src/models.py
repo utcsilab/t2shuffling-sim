@@ -130,11 +130,14 @@ def nn1(X, k=None):
 
   ##########################################
 
-  a = nn.get_activation_layers(X)
   import matplotlib.pyplot as plt
   plt.figure()
   plt.plot(c)
-  plt.show()
+  savefig('../saves/nn1_cost')
+
+  ##########################################
+
+  a = nn.get_activation_layers(X)
   return nn.theta_lst[-1], a[-2], nn.theta_lst[-1] * a[-2]
 
 models_dict["nn1"] = nn1
