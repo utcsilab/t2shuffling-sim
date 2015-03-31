@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 
 
-from __future__ import division
-from optparse   import OptionParser
-from os         import system
-from models     import models_dict
-from cfl        import readcfl, writecfl, cfl2sqcfl, sqcfl2mat, mat2sqcfl
-from metrics    import get_metric
-from plot       import plot_simulation, plot_cfl_signals
+from __future__     import division
+from optparse       import OptionParser
+from os             import system
+from models         import models_dict
+from cfl            import readcfl, writecfl, cfl2sqcfl, sqcfl2mat, mat2sqcfl
+from metrics        import get_metric
+from plot           import plot_simulation, plot_cfl_signals
+from gen_FSEmatrix  import gen_FSEmatrix
 
 
 import numpy as np
@@ -34,7 +35,7 @@ parser.add_option("--model", dest="model", type=str, default='all', help="The mo
 parser.add_option("--add_control", dest="add_control", action="store_true", default=False, help="Set this flag if you want to compare said model with svd")
 parser.add_option("--save_cfl", dest="save_cfl", action="store_true", default=False, help="Set this flag if you want to save cfl")
 parser.add_option("--save_plots", dest="save_plots", action="store_true", default=False, help="Set this flag to save plots")
-parser.add_option("--save_imgs", dest="save_imgs", action="store_true", default=False, help="Set this flag to save imgimgss")
+parser.add_option("--save_imgs", dest="save_imgs", action="store_true", default=False, help="Set this flag to save imgs")
 
 
 options, args = parser.parse_args()
@@ -115,9 +116,9 @@ if options.save_plots:
   for m in lst:
     mod = results[m]
     if options.cfl:
-      plot_cfl_signals(mod['U'], options.k, X, mod['X_hat'], m, e2s)
+      plot_cfl_signals(mod['U'], options.k, X, mod['X_hat'], "cfl_" + m, options.e2s)
     else:
-      plot_simulation(mod['U'], options.k, X, mod['X_hat'], m, T1vals, T2vals, e2s)
+      plot_simulation(mod['U'], options.k, X, mod['X_hat'], "sim_" + m, T1vals, T2vals, e2s)
 
 
 if options.save_imgs:

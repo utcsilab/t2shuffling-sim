@@ -48,7 +48,7 @@ def plot_simulation(U, k, X, X_hat, model_name, T1vals, T2vals, e2s):
   pnorm, fro_perc_err = get_metric(X, X_hat, disp=False)
   fig = plt.figure(figsize=img_size)
   half = int(np.floor(span/2))
-  ax1 = plt.subplot2grid((4, span), (0,0), colspan=2)
+  ax1 = plt.subplot2grid((4, span), (0,0), colspan=half)
   ax2 = plt.subplot2grid((4, span), (0,half), colspan=half)
   ax3 = plt.subplot2grid((4, span), (1,0), colspan=span)
   ax4 = plt.subplot2grid((4, span), (2,0), colspan=span)
@@ -65,16 +65,18 @@ def plot_simulation(U, k, X, X_hat, model_name, T1vals, T2vals, e2s):
   fig.text(0.1115, 1 - 0.025, "Model: " + model_name, fontsize=20, bbox={'alpha':0.5, 'pad':10})
   fig.savefig(plots_path + model_name + '.png')
 
-def plot_cfl_signals(U, k, X, X_hat, e2s):
-  pnorm, fro_perc_err = get_metric(X, X_hat)
+def plot_cfl_signals(U, k, X, X_hat, model_name, e2s):
+  span = 2
+  half = 1
+  pnorm, fro_perc_err = get_metric(X, X_hat, disp=False)
   fig = plt.figure(figsize=img_size)
-  ax1 = plt.subplot2grid((4, span), (0,0), colspan=2)
-  ax2 = plt.subplot2grid((4, span), (0,half), colspan=half)
-  ax3 = plt.subplot2grid((4, span), (1,0), colspan=span)
-  ax4 = plt.subplot2grid((4, span), (2,0), colspan=span)
-  mksv_plot(ax1, X, 'Signals', 'TE Number', 'Signal', xstart=e2s)
-  mksv_plot(ax2, X_hat, 'Recovered Signals', 'TE number', 'Signal', xstart=e2s)
-  mksv_plot(ax3, X-X_hat, 'Difference', 'TE number', 'Diff', xstart=e2s)
+  ax1 = plt.subplot2grid((3, span), (0,0), colspan=half)
+  ax2 = plt.subplot2grid((3, span), (0,half), colspan=half)
+  ax3 = plt.subplot2grid((3, span), (1,0), colspan=span)
+  ax4 = plt.subplot2grid((3, span), (2,0), colspan=span)
+  mksv_plot(ax1, X, 'Signals (Abs)', 'TE Number', 'Signal', xstart=e2s)
+  mksv_plot(ax2, X_hat, 'Recovered Signals (Abs)', 'TE number', 'Signal', xstart=e2s)
+  mksv_plot(ax3, X-X_hat, 'Difference (Abs)', 'TE number', 'Diff', xstart=e2s)
   mksv_plot(ax4, U[:, :k], 'Basis', 'TE number', 'Signal', xstart=e2s)
   fig.tight_layout()
   plt.subplots_adjust(top=0.925, bottom=0.1)
