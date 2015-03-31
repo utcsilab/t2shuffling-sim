@@ -20,7 +20,7 @@ class NN_simple:
     for i in range(len(theta_lst)):
       self.theta_lst[i] = theta_lst[i]
 
-  def save_thata(self, path):
+  def save_theta(self, path):
     """ This saves the theta_lst as an npy """
     np.save(path, np.array(self.theta_lst)) 
 
