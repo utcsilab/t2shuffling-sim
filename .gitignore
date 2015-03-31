@@ -1,0 +1,4 @@
+*.pyc
+pres
+src/__pycache__
+src/sort

@@ -1,0 +1,8 @@
+mask - 2D zero-one mask of foreground and background
+proton - estimate of proton density of each pixel
+T2est - estimate of T2 value of each pixel
+T2vals - sorted and unique list of estimated T2 values from T2est
+
+you should work with the masked values, e.g. 
+imshow( T2est * 1000 * mask )
+imshow( proton * mask )
