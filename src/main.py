@@ -26,7 +26,7 @@ parser = OptionParser()
 # simulation options
 parser.add_option("--genFSE", dest="genFSE", action="store_true", default=False, help="Set this flag if you want to generate a simulation")
 parser.add_option("--loadFSE", dest="loadFSE", type=str, default=False, help="Pass in path to simulation mat FILE.")
-parser.add_option("--saveFSE", dest="saveFSE", type=str, default=None, help="Pass in path to FOLDER to save simulation.")
+parser.add_option("--saveFSE", dest="saveFSE", type=str, default=None, help="Pass in path to file to save simulation.")
 
 #cfl options
 parser.add_option("--cfl", dest="cfl", type=str, default=None, help="Path to cfl file")
@@ -109,7 +109,7 @@ elif options.genFSE:
   X = gen_FSEmatrix(N, angles, ETL, e2s, TE, T1vals, T2vals)
   if options.saveFSE != None:
     print "Saving at " + options.saveFSE
-    sio.savemat(options.saveFSE + "FSE", {"X": X, "angles": angles, "N": N, "ETL":ETL, "e2s":e2s, "TE": TE, "T1vals":T1vals, "T2vals":T2vals})
+    sio.savemat(options.saveFSE, {"X": X, "angles": angles, "N": N, "ETL":ETL, "e2s":e2s, "TE": TE, "T1vals":T1vals, "T2vals":T2vals})
 
 else:
 
