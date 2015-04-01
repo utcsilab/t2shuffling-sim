@@ -12,7 +12,7 @@ def gen_FSEmatrix(N, angles_rad, ETL, e2s, TE, T1vals, T2vals):
   T1 = np.sort(T1vals)
   T2 = np.sort(T2vals)
 
-  X = np.matrix(np.zeros((T, N * len(T1))))
+  X = np.matrix(np.zeros((T, N * len(T1))), dtype=np.complex64)
 
   c = 0
   total = N * len(T1)
