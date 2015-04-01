@@ -3,6 +3,5 @@
 pres
 src/__pycache__
 src/sort
-saves
 src/run*
 src/log*
