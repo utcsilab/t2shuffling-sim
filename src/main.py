@@ -9,6 +9,7 @@ from cfl            import readcfl, writecfl, cfl2sqcfl, sqcfl2mat, mat2sqcfl
 from metrics        import get_metric
 from plot           import plot_simulation, plot_cfl_signals
 from gen_FSEmatrix  import gen_FSEmatrix
+from sys            import argv
 
 
 import numpy as np
@@ -21,39 +22,60 @@ time_stamp = ""
 
 
 parser = OptionParser()
-parser.add_option("--loadMatrix", dest="loadMatrix", action="store_true", default=False, help="Set this flag if you want to load FSEmatrix")
+
+# simulation options
+parser.add_option("--genFSE", dest="genFSE", action="store_true", default=False, help="Set this flag if you want to generate a simulation")
+parser.add_option("--loadFSE", dest="loadFSE", type=str, default=False, help="Pass in path to simulation mat FILE.")
+parser.add_option("--saveFSE", dest="saveFSE", type=str, default=None, help="Pass in path to FOLDER to save simulation.")
+
+#cfl options
+parser.add_option("--cfl", dest="cfl", type=str, default=None, help="Path to cfl file")
+
+# genFSE 
 parser.add_option("--numT2", dest="N", type=int, default=256, help="Number of T2 values to load in.")
 parser.add_option("--angles", dest="angles", type=str, default=None, help="Load in Angles in degrees.")
 parser.add_option("--ETL", dest="ETL", type=int, default=None, help="Load in ETL")
 parser.add_option("--TE", dest="TE", type=float, default=5.568e-3, help="Load in TE")
 parser.add_option("--T1vals", dest="T1vals", type=str, default=None, help="Load in T1 values")
 parser.add_option("--T2vals", dest="T2vals", type=str, default=None, help="Load in T2 values")
-parser.add_option("--cfl", dest="cfl", type=str, default=None, help="Path to cfl file")
-parser.add_option("--e2s", dest="e2s", type=int, default=4, help="Echos to skip")
-parser.add_option("--k", dest="k", type=int, default=None, help="Number of basis vectors to construct. This only effects the reconstructed X")
-parser.add_option("--model", dest="model", type=str, default='all', help="The model you want to test")
+
+# universal options
+parser.add_option("--e2s", dest="e2s", type=int, default=2, help="Echos to skip")
+parser.add_option("-k", "--dim", dest="k", type=int, default=None, help="Number of basis vectors to construct. This only effects the reconstructed X")
+parser.add_option("--model", dest="model", type=str, default=[], action="append", help="The model you want to test")
 parser.add_option("--add_control", dest="add_control", action="store_true", default=False, help="Set this flag if you want to compare said model with svd")
-parser.add_option("--save_cfl", dest="save_cfl", action="store_true", default=False, help="Set this flag if you want to save cfl")
-parser.add_option("--save_plots", dest="save_plots", action="store_true", default=False, help="Set this flag to save plots")
-parser.add_option("--save_imgs", dest="save_imgs", action="store_true", default=False, help="Set this flag to save imgs")
+
+# saving options
+parser.add_option("--save_basis", dest="save_basis", type=str, default=None, help="Pass in path to FOLDER to save basis.")
+parser.add_option("--save_plots", dest="save_plots", type=str, default=None, help="Pass in path to FOLDER to save plots.")
+parser.add_option("--save_imgs", dest="save_imgs", type=str, default=None, help="Pass in path to FOLDER to save images.")
+parser.add_option("--set_basis_name", dest="basis_name", type=str, default=None, help="Pass this to change saved basis name. USE ONLY IF TESTING 1 MODEL.")
 
 
 options, args = parser.parse_args()
 
+if len(argv) == 1:
+  parser.print_help()
+  exit(1)
 
-assert (options.cfl or options.angles) and (options.cfl != options.angles), "Please pass in a cfl file XOR an angles file."""
+
+assert (options.cfl or options.loadFSE or options.genFSE), "Please pass in a cfl file XOR an angles file XOR an FSEsim."
+
+assert int(options.cfl != None) + int(options.loadFSE != None) + int(options.genFSE), "Please pass in cfl XOR angles XOR FSEsim."
 
 
 if options.save_imgs:
-  assert options.cfl, "In order to save images, a cfl file must be passed instead of values for a simulation."""
+  assert options.cfl, "In order to save images, a cfl file must be passed instead of values for a simulation."
 
+if options.basis_name != None:
+  assert len(options.model == 1), "In order to change the saved basis name, you must test a single model. "
 
 if options.cfl:
 
   cfl_name = options.cfl.split('.')[-1]
   X, img_dim = sqcfl2mat(cfl2sqcfl(readcfl(options.cfl), options.e2s))
 
-else: 
+elif options.genFSE: 
 
   time_stamp = "." + options.angles.split('.')[-1] 
   try:
@@ -84,14 +106,25 @@ else:
     ETL = T - e2s - 1
   else:
     ETL = options.ETL
-  if options.loadMatrix:
-    X = np.matrix(sio.loadmat(load_FSEpath)["FSEmatrix"])
-  else:
-    X = gen_FSEmatrix(N, angles, ETL, e2s, TE, T1vals, T2vals)
-    sio.savemat(data_path + "FSEmatrix", {"FSEmatrix": X})
+  X = gen_FSEmatrix(N, angles, ETL, e2s, TE, T1vals, T2vals)
+  if options.saveFSE != None:
+    print "Saving at " + options.saveFSE
+    sio.savemat(options.saveFSE + "FSE", {"X": X, "angles": angles, "N": N, "ETL":ETL, "e2s":e2s, "TE": TE, "T1vals":T1vals, "T2vals":T2vals})
+
+else:
+
+  dct = sio.loadmat(options.loadFSE)
+  X = np.matrix(dct["X"])
+  angles = np.matrix(dct["angles"])
+  N = np.matrix(dct["N"])
+  ETL = np.matrix(dct["ETL"])
+  e2s = np.matrix(dct["e2s"])
+  TE = np.matrix(dct["TE"])
+  T1vals = np.matrix(dct["T1vals"])
+  T2vals = np.matrix(dct["T2vals"])
 
 
-lst = [options.model]
+lst = options.model
 if options.add_control:
   lst.append('simple_svd')
 if options.model == 'all':
@@ -112,21 +145,21 @@ for m in lst:
 print "------------------------------------------------------------"
 
 
-if options.save_plots:
+if options.save_plots != None:
   for m in lst:
     mod = results[m]
     if options.cfl:
-      plot_cfl_signals(mod['U'], options.k, X, mod['X_hat'], "cfl_" + m, options.e2s)
+      plot_cfl_signals(mod['U'], options.k, X, mod['X_hat'], "cfl_" + m, options.e2s, options.save_plots)
     else:
-      plot_simulation(mod['U'], options.k, X, mod['X_hat'], "sim_" + m, T1vals, T2vals, e2s)
+      plot_simulation(mod['U'], options.k, X, mod['X_hat'], "sim_" + m, T1vals, T2vals, e2s, options.save_plots)
 
 
-if options.save_imgs:
+if options.save_imgs != None:
   # TODO
   None
 
 
-if options.save_cfl:
+if options.save_basis != None:
   for m in results.keys():
     U = np.array(results[m]["U"], dtype=np.complex64)
     k = results[m]['k']
@@ -137,4 +170,6 @@ if options.save_cfl:
 
     k_ext = '_k_%d' % k
 
+    if options.basis_name != None:
+      cfl_name = options.basis_name  
     writecfl(cfl_path + cfl_name + "_" + m + k_ext + time_stamp, U)
