@@ -120,11 +120,8 @@ def nn1(X, k=None):
   nn = NN_simple([X.shape[0], k, X.shape[0]])
   
   nn.load_theta('../saves/nn1_theta.npy')
-  c = nn.train(X, X, num_iter=100, alpha=1e-6, verbose=True)
+  c = nn.train(X, X, num_iter=100, alpha=1e-6)
   #nn.save_theta('../saves/nn1_theta.npy')
-  import matplotlib.pyplot as plt
-  plt.plot(c)
-  plt.show()
 
   a = nn.get_activation_layers(X)
   return nn.theta_lst[-1], a[-2], nn.theta_lst[-1] * a[-2]
