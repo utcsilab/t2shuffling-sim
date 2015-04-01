@@ -119,23 +119,9 @@ def nn1(X, k=None):
     k = 3
   nn = NN_simple([X.shape[0], k, X.shape[0]])
   
-  ##########################################
-
-  #nn.load_theta('../saves/nn1_theta.npy')
-
-  ##########################################
-
-  c = nn.train(X, X, num_iter=1000000, alpha=1e-8, verbose=True)
+  nn.load_theta('../saves/nn1_theta.npy')
+  c = nn.train(X, X, num_iter=1000000, alpha=1e-5, verbose=True)
   nn.save_theta('../saves/nn1_theta.npy')
-
-  ##########################################
-
-  import matplotlib.pyplot as plt
-  plt.figure()
-  plt.plot(c)
-  plt.savefig('../saves/nn1_cost')
-
-  ##########################################
 
   a = nn.get_activation_layers(X)
   return nn.theta_lst[-1], a[-2], nn.theta_lst[-1] * a[-2]
