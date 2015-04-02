@@ -9,11 +9,9 @@ norm = np.linalg.norm
 inv = np.linalg.inv
 
 
-def svd(X, k=None):
+def svd(X):
   """ Returns the first k vectors of the SVD of X """
   U, S, V = np.linalg.svd(X, full_matrices=False)
-  if k is not None:
-    return np.matrix(U[:, 0:k])
   return np.matrix(U)
 
 
@@ -119,14 +117,27 @@ def nn1(X, k=None):
     k = 3
   nn = NN_simple([X.shape[0], k, X.shape[0]])
   
-  nn.load_theta('../saves/nn1_theta.npy')
-  c = nn.train(X, X, num_iter=100, alpha=1e-6)
-  #nn.save_theta('../saves/nn1_theta.npy')
-
-  a = nn.get_activation_layers(X)
-  return nn.theta_lst[-1], a[-2], nn.theta_lst[-1] * a[-2]
+  #nn.load_theta('../saves/nn1_theta.npy')
+  #c = nn.train(X, X, num_iter=2000000, alpha=1e-9, lmbda=10)
+  #c = nn.train(X, X, num_iter=10, alpha=1e-20, lmbda=1e-5, verbose=True)
+  c = nn.train(X, X, num_iter=2000000, alpha=1e-20, lmbda=1e-5, verbose=True)
+  nn.save_theta('../saves/knee_low_res_nn1_theta.npy')
+  U = nn.theta_lst[-1]
+  alpha = np.linalg.inv(U.T * U) * U.T * X
+  return U, alpha, U * alpha
 
 models_dict["nn1"] = nn1
+
+
+def nn1_scaled_X(X, k=None):
+  scales = np.diag(1/np.linalg.norm(X, ord=3, axis=0)**2.5)
+  Xt = X * scales
+  U, _, _ = nn1(Xt, k)
+  alpha = np.linalg.inv(U.T * U) * U.T * X
+  return U, alpha, U * alpha
+
+
+models_dict["nn1_scaled_X"] = nn1_scaled_X
 
 
 def partition_more_low_t2(X, k=None):
@@ -153,3 +164,23 @@ def scale_col_with_power_low_T2(X, k=None):
   return U, alpha, U[:, :k] * alpha[:k]
 
 models_dict["scale_col_with_power_low_T2"] = scale_col_with_power_low_T2
+
+
+def reg_svd(X, k=None):
+  scales = np.diag(1/np.linalg.norm(X, ord=2, axis=0))
+  Xt = X * scales
+  U = svd(Xt)
+  alpha = np.linalg.inv(U.T * U) * U.T * X
+  return U, alpha, U[:, :k] * alpha[:k]
+
+models_dict["reg_svd"] = reg_svd
+
+
+def reg_svd_sq(X, k=None):
+  scales = np.diag(1/np.linalg.norm(X, ord=2, axis=0)**2)
+  Xt = X * scales
+  U = svd(Xt)
+  alpha = np.linalg.inv(U.T * U) * U.T * X
+  return U, alpha, U[:, :k] * alpha[:k]
+
+models_dict["reg_svd_sq"] = reg_svd_sq

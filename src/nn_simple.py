@@ -24,15 +24,16 @@ class NN_simple:
     """ This saves the theta_lst as an npy """
     np.save(path, np.array(self.theta_lst)) 
 
-  def train(self, X, y, alpha=0.3, num_iter=100, verbose=False):
-    c = [self.cost(X, y)]
+  def train(self, X, y, alpha=0.3, num_iter=100, lmbda=0, verbose=False):
+    c = [self.cost(X, y, lmbda)]
+    m, n = X.shape
     if verbose:
       print "Init cost: %f" % c[-1]
     for i in range(num_iter):
       grad = self.theta_gradients(X, y)
       k = len(self.theta_lst)
       for j in range(k):
-        self.theta_lst[j] -= alpha * grad[j]
+        self.theta_lst[j] -= alpha * (grad[j] + (lmbda/n) * self.theta_lst[j])
       c.append(self.cost(X, y))
       if verbose:
         print "Progress: %d / %d, Cost: %f" % (i+1, num_iter, c[-1])
@@ -44,9 +45,11 @@ class NN_simple:
       activation_layers.append(theta * activation_layers[-1])
     return activation_layers
 
-  def cost(self, X, y):
+  def cost(self, X, y, lmbda=0):
     h = self.get_activation_layers(X)[-1]
-    return np.linalg.norm(y - h, 'fro')/np.linalg.norm(y, 'fro') * 100
+    t = sum([np.linalg.norm(theta, 'fro') for theta in self.theta_lst])
+    reg = (lmbda/2) * t
+    return ((np.linalg.norm(y - h, 'fro')/np.linalg.norm(y, 'fro')) + reg) * 100
 
   def theta_gradients(self, X, y):
     activation_layers = self.get_activation_layers(X)
