@@ -28,6 +28,8 @@ def mksv_plot(ax, data, title, xlabel, ylabel, xstart=0, ylim=None, other_label=
     ax.set_title(title)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
+    if ylim:
+      ax.set_ylim(ylim)
   elif type(data) == tuple:
     assert len(data) >= 3 and type(ax == list)
     x, t, y = [list(matrix_to_1Darray(elm)) for elm in data]
@@ -52,10 +54,10 @@ def plot_simulation(U, k, X, X_hat, model_name, T1vals, T2vals, e2s, path):
   ax3 = plt.subplot2grid((4, span), (1,0), colspan=span)
   ax4 = plt.subplot2grid((4, span), (2,0), colspan=span)
   ax5 = [plt.subplot2grid((4, span), (3, i)) for i in range(span)]
-  mksv_plot(ax1, X, 'Signals', 'TE Number', 'Signal', xstart=e2s)
-  mksv_plot(ax2, X_hat, 'Recovered Signals', 'TE number', 'Signal', xstart=e2s)
-  mksv_plot(ax3, X-X_hat, 'Difference', 'TE number', 'Diff', xstart=e2s)
-  mksv_plot(ax4, U[:, :k], 'Basis', 'TE number', 'Signal', xstart=e2s)
+  mksv_plot(ax1, X/np.max(X), 'Signals', 'TE Number', 'Signal', xstart=e2s, ylim=[0, 1])
+  mksv_plot(ax2, X_hat/np.max(X_hat), 'Recovered Signals', 'TE number', 'Signal', xstart=e2s, ylim=[0, 1])
+  mksv_plot(ax3, abs(X-X_hat), 'Difference', 'TE number', 'Diff', xstart=e2s)
+  mksv_plot(ax4, -U[:, :k], 'Basis', 'TE number', 'Signal', xstart=e2s)
   mksv_plot(ax5, (T2vals * 1000, T1vals * 1000, pnorm), 'T2_Error', 'T2_vals (ms)', 'Percentage Error', other_label="T1 (in ms): ", ylim=[0,5])
   fig.tight_layout()
   plt.subplots_adjust(top=0.925, bottom=0.1)
@@ -69,14 +71,20 @@ def plot_cfl_signals(U, k, X, X_hat, model_name, e2s, path):
   half = 1
   pnorm, fro_perc_err = get_metric(X, X_hat, disp=False)
   fig = plt.figure(figsize=img_size)
-  ax1 = plt.subplot2grid((3, span), (0,0), colspan=half)
-  ax2 = plt.subplot2grid((3, span), (0,half), colspan=half)
-  ax3 = plt.subplot2grid((3, span), (1,0), colspan=span)
-  ax4 = plt.subplot2grid((3, span), (2,0), colspan=span)
-  mksv_plot(ax1, X/np.max(X), 'Signals ', 'TE Number', 'Signal', xstart=e2s)
-  mksv_plot(ax2, X_hat/np.max(X_hat), 'Recovered Signals', 'TE number', 'Signal', xstart=e2s)
+  ax1 = plt.subplot2grid((4, span), (0,0), colspan=half)
+  ax2 = plt.subplot2grid((4, span), (0,half), colspan=half)
+  ax3 = plt.subplot2grid((4, span), (1,0), colspan=span)
+  ax4 = plt.subplot2grid((4, span), (2,0), colspan=span)
+  ax5 = plt.subplot2grid((4, span), (3,0), colspan=span)
+  mksv_plot(ax1, X/np.max(X), 'Signals ', 'TE Number', 'Signal', xstart=e2s, ylim=[0, 1])
+  mksv_plot(ax2, X_hat/np.max(X_hat), 'Recovered Signals', 'TE number', 'Signal', xstart=e2s, ylim=[0, 1])
   mksv_plot(ax3, abs(X-X_hat), 'Difference (Abs)', 'TE number', 'Diff', xstart=e2s)
-  mksv_plot(ax4, U[:, :k], 'Basis', 'TE number', 'Signal', xstart=e2s)
+  mksv_plot(ax4, -U[:, :k], 'Basis', 'TE number', 'Signal', xstart=e2s)
+
+  n_idx = np.argsort(np.linalg.norm(X, ord=1, axis=0))
+  diff  = np.matrix(pnorm[n_idx]).T
+  mksv_plot(ax5, diff, "Percentage error - Increasing norm", "TE Number", "Perc Error", xstart=e2s, ylim=[0, 25])
+
   fig.tight_layout()
   plt.subplots_adjust(top=0.925, bottom=0.1)
   fig.text(0.1115, 0.025, "Total Percentage Error: " + str(fro_perc_err) + \
