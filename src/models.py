@@ -167,6 +167,7 @@ models_dict["scale_col_with_power_low_T2"] = scale_col_with_power_low_T2
 
 
 def reg_svd(X, k=None):
+  """ normalize each signal curve to norm 1. """
   scales = np.diag(1/np.linalg.norm(X, ord=2, axis=0))
   Xt = X * scales
   U = svd(Xt)

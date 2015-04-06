@@ -41,9 +41,10 @@ parser.add_option("--T2vals", dest="T2vals", type=str, default=None, help="Load 
 
 # universal options
 parser.add_option("--e2s", dest="e2s", type=int, default=2, help="Echos to skip")
-parser.add_option("-k", "--dim", dest="k", type=int, default=None, help="Number of basis vectors to construct. This only effects the reconstructed X")
+parser.add_option("-K", "--dim", dest="k", type=int, default=None, help="Number of basis vectors to construct. This only effects the reconstructed X")
 parser.add_option("--model", dest="model", type=str, default=[], action="append", help="The model you want to test")
 parser.add_option("--add_control", dest="add_control", action="store_true", default=False, help="Set this flag if you want to compare said model with svd")
+parser.add_option("--print-models", dest="print_models", action="store_true", default=False, help="Print all the model choices and exit.")
 
 # saving options
 parser.add_option("--save_basis", dest="save_basis", type=str, default=None, help="Pass in path to FOLDER to save basis.")
@@ -57,6 +58,14 @@ options, args = parser.parse_args()
 if len(argv) == 1:
   parser.print_help()
   exit(1)
+
+if options.print_models:
+    for key in models_dict:
+        if models_dict[key].__doc__ is not None:
+            print '\t'.join(('"%s"' % key , models_dict[key].__doc__))
+        else:
+            print '"%s"' % key
+    exit(0)
 
 
 assert (options.cfl or options.loadFSE or options.genFSE), "Please pass in a cfl file XOR an angles file XOR an FSEsim."
