@@ -27,6 +27,8 @@ parser = OptionParser()
 parser.add_option("--genFSE", dest="genFSE", action="store_true", default=False, help="Set this flag if you want to generate a simulation")
 parser.add_option("--loadFSE", dest="loadFSE", type=str, default=False, help="Pass in path to simulation mat FILE.")
 parser.add_option("--saveFSE", dest="saveFSE", type=str, default=None, help="Pass in path to file to save simulation.")
+parser.add_option("--rvc", dest="rvc", action="store_true", default=False, help="Real value constraint on basis.")
+parser.add_option("--avc", dest="avc", action="store_true", default=False, help="Absolute value constraint on basis.")
 
 #cfl options
 parser.add_option("--cfl", dest="cfl", type=str, default=None, help="Path to cfl file")
@@ -71,6 +73,16 @@ if options.print_models:
 assert (options.cfl or options.loadFSE or options.genFSE), "Please pass in a cfl file XOR an angles file XOR an FSEsim."
 
 assert int(options.cfl != None) + int(options.loadFSE != None) + int(options.genFSE), "Please pass in cfl XOR angles XOR FSEsim."
+
+assert not (options.rvc and options.avc), "Please choose real-value NAND abs-value constraint."
+
+if options.rvc:
+    rvc = 'real'
+elif options.avc:
+    rvc = 'abs'
+else:
+    rvc = None
+
 
 
 if options.save_imgs:
@@ -134,6 +146,13 @@ else:
   T1vals = np.matrix(dct["T1vals"])
   T2vals = np.matrix(dct["T2vals"])
 
+if rvc == 'real':
+    print 'real value constraint'
+    X = np.real(X)
+elif rvc == 'abs':
+    print 'abs value constraint'
+    X = np.abs(X)
+
 
 lst = options.model
 if options.add_control:
@@ -147,7 +166,7 @@ for m in lst:
   print "------------------------------------------------------------"
   model = models_dict[m]
   k = options.k
-  U, alpha, X_hat = model(X, options.k)
+  U, alpha, X_hat = model(X, options.k, rvc)
   print "Results"
   pnorm, fro_perc_err = get_metric(X, X_hat)
   if not k:
