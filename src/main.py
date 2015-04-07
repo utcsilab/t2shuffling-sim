@@ -105,7 +105,7 @@ elif options.genFSE:
   if not options.T2vals:
     T2vals = np.linspace(20e-3, 800e-3, N)
   else:
-    T2vals = np.matrix(sio.loadmat(options.T2vals)['T2vals'])
+    T2vals = sio.loadmat(options.T2vals)['T2vals']
   if T2vals.shape[0] > N:
     idx = np.random.permutation(T2vals.shape[0])
     T2vals = T2vals[idx[0:N]]
@@ -115,6 +115,8 @@ elif options.genFSE:
     ETL = T - e2s - 1
   else:
     ETL = options.ETL
+  T1vals = np.ravel(T1vals)
+  T2vals = np.ravel(T2vals)
   X = gen_FSEmatrix(N, angles, ETL, e2s, TE, T1vals, T2vals)
   if options.saveFSE != None:
     print "Saving at " + options.saveFSE
