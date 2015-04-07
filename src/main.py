@@ -35,13 +35,13 @@ parser.add_option("--cfl", dest="cfl", type=str, default=None, help="Path to cfl
 parser.add_option("--numT2", dest="N", type=int, default=256, help="Number of T2 values to load in.")
 parser.add_option("--angles", dest="angles", type=str, default=None, help="Load in Angles in degrees.")
 parser.add_option("--ETL", dest="ETL", type=int, default=None, help="Load in ETL")
-parser.add_option("--TE", dest="TE", type=float, default=5.568e-3, help="Load in TE")
-parser.add_option("--T1vals", dest="T1vals", type=str, default=None, help="Load in T1 values")
-parser.add_option("--T2vals", dest="T2vals", type=str, default=None, help="Load in T2 values")
+parser.add_option("--TE", dest="TE", type=float, default=5.568e-3, help="Echo spacing (TE) in seconds")
+parser.add_option("--T1vals", dest="T1vals", type=str, default=None, help="Load T1 values from .mat file with variable 'T1vals'")
+parser.add_option("--T2vals", dest="T2vals", type=str, default=None, help="Load T2 values from .mat file with variable 'T2vals'")
 
 # universal options
-parser.add_option("--e2s", dest="e2s", type=int, default=2, help="Echos to skip")
-parser.add_option("-K", "--dim", dest="k", type=int, default=None, help="Number of basis vectors to construct. This only effects the reconstructed X")
+parser.add_option("--e2s", dest="e2s", type=int, default=2, help="Echoes to skip")
+parser.add_option("-K", "--dim", dest="k", type=int, default=None, help="Number of basis vectors to construct. This only effects the reconstructed Xhat")
 parser.add_option("--model", dest="model", type=str, default=[], action="append", help="The model you want to test")
 parser.add_option("--add_control", dest="add_control", action="store_true", default=False, help="Set this flag if you want to compare said model with svd")
 parser.add_option("--print-models", dest="print_models", action="store_true", default=False, help="Print all the model choices and exit.")
