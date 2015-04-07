@@ -89,7 +89,7 @@ if options.save_imgs:
   assert options.cfl, "In order to save images, a cfl file must be passed instead of values for a simulation."
 
 if options.basis_name != None:
-  assert len(options.model == 1), "In order to change the saved basis name, you must test a single model. "
+  assert len(options.model) == 1, "In order to change the saved basis name, you must test a single model. "
 
 if options.cfl:
 
