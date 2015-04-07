@@ -27,11 +27,11 @@ def epg_rf(FpFmZ, alpha, phi):
     if abs(alpha) > 2 * pi:
         warn('epg_rf: Flip angle should be in radians!')
 
-    RR = np.matrix([ [ (cos(alpha/2.))**2, exp(2*1j*phi)*(sin(alpha/2.))**2, -1j*exp(1j*phi)*sin(alpha)],
+    RR = np.array([ [ (cos(alpha/2.))**2, exp(2*1j*phi)*(sin(alpha/2.))**2, -1j*exp(1j*phi)*sin(alpha)],
             [exp(-2*1j*phi)*(sin(alpha/2.))**2, (cos(alpha/2.))**2, 1j*exp(-1j*phi)*sin(alpha)],
             [-1j/2.*exp(-1j*phi)*sin(alpha), 1j/2.*exp(1j*phi)*sin(alpha), cos(alpha)] ])
 
-    FpFmZ = RR * FpFmZ
+    FpFmZ = np.dot(RR , FpFmZ)
 
     return FpFmZ, RR
 
@@ -113,7 +113,7 @@ def FSE_signal(angles_rad, TE, T1, T2):
     T = len(angles_rad)
     S = np.zeros((T,1), dtype=complex)
 
-    P = np.matrix([[0],[0],[1]])    # initially in M0
+    P = np.array([[0],[0],[1]])    # initially in M0
 
     P = epg_rf(P, pi/2, pi/2)[0]    # 90 degree tip
 

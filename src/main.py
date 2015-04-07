@@ -117,7 +117,7 @@ elif options.genFSE:
     ETL = options.ETL
   T1vals = np.ravel(T1vals)
   T2vals = np.ravel(T2vals)
-  X = gen_FSEmatrix(N, angles, ETL, e2s, TE, T1vals, T2vals)
+  X = np.matrix(gen_FSEmatrix(N, angles, ETL, e2s, TE, T1vals, T2vals))
   if options.saveFSE != None:
     print "Saving at " + options.saveFSE
     sio.savemat(options.saveFSE, {"X": X, "angles": angles, "N": N, "ETL":ETL, "e2s":e2s, "TE": TE, "T1vals":T1vals, "T2vals":T2vals})
