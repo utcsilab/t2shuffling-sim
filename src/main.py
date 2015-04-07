@@ -187,6 +187,7 @@ if options.save_plots != None:
 
 if options.save_imgs != None:
   # TODO
+  warn('TODO: implement options.save_imgs')
   None
 
 
