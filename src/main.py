@@ -194,7 +194,8 @@ if options.save_basis != None:
   for m in results.keys():
     U = np.array(results[m]["U"], dtype=np.complex64)
     k = results[m]['k']
-    U = np.hstack((U, np.zeros((U.shape[0], U.shape[0] - k))))
+    if U.shape[1] < U.shape[0]:
+        U = np.hstack((U, np.zeros((U.shape[0], U.shape[0] - k))))
 
     for i in range(5):
       U = np.expand_dims(U, axis=0)
