@@ -16,10 +16,11 @@ def svd(X):
 
 
 def compute_alpha(X, U, rvc=None):
-   if rvc is None:
-      return np.linalg.inv(U.H * U) * U.H * X
-   else:
-      return np.linalg.inv(U.T * U) * U.T * X
+  if rvc is None:
+    return np.dot(np.dot(np.linalg.inv(np.dot(U.H,  U)), U.H), X)
+  else:
+    return np.dot(np.dot(np.linalg.inv(np.dot(U.T, U)), U.T), X)
+
 
 def rvc_U(U, rvc=None):
    if rvc == 'real':
@@ -29,7 +30,6 @@ def rvc_U(U, rvc=None):
    return U
 
 
-
 models_dict = {}
 
 
@@ -37,7 +37,7 @@ def simple_svd(X, k=None, rvc=None):
   U = svd(X)
   U = rvc_U(U, rvc)
   alpha = compute_alpha(X, U, rvc)
-  return U, alpha, U[:, :k] * alpha[:k]
+  return U, alpha, np.dot(U[:, :k], alpha[:k])
 
 models_dict["simple_svd"] = simple_svd
 
@@ -49,7 +49,7 @@ def sub_col_mean(X, k=None, rvc=None):
   U     = svd(X_hat)
   U = rvc_U(U, rvc)
   alpha = compute_alpha(X, U, rvc)
-  return U, alpha, U[:, :k] * alpha[:k]
+  return U, alpha, np.dot(U[:, :k], alpha[:k])
 
 models_dict["sub_col_mean"] = sub_col_mean
 
@@ -73,7 +73,7 @@ def no_reg_grad_descent(X, k=None, rvc=None):
   U = rvc_U(U, rvc)
   alpha = compute_alpha(X, U, rvc)
 
-  return U, alpha, U[:, :k] * alpha[:k]
+  return U, alpha, np.dot(U[:, :k], alpha[:k])
 
 models_dict["no_reg_grad_descent"] = no_reg_grad_descent
 
@@ -103,7 +103,7 @@ def reg_grad_descent(X, k=None, rvc=None):
   U = rvc_U(U, rvc)
   alpha = compute_alpha(X, U, rvc)
 
-  return U, alpha, U[:, :k] * alpha[:k]
+  return U, alpha, np.dot(U[:, :k], alpha[:k])
 
 models_dict["reg_grad_descent"] = reg_grad_descent
 
@@ -116,7 +116,7 @@ def scale_col_no_power(X, k=None, rvc=None):
   U = svd(Xhat)
   U = rvc_U(U, rvc)
   alpha = compute_alpha(X, U, rvc)
-  return U, alpha, U[:, :k] * alpha[:k]
+  return U, alpha, np.dot(U[:, :k], alpha[:k])
 
 models_dict["scale_col_no_power"] = scale_col_no_power
 
@@ -128,7 +128,7 @@ def scale_col_with_power(X, k=None, rvc=None):
   U = svd(Xhat)
   U = rvc_U(U, rvc)
   alpha = compute_alpha(X, U, rvc)
-  return U, alpha, U[:, :k] * alpha[:k]
+  return U, alpha, np.dot(U[:, :k], alpha[:k])
 
 models_dict["scale_col_with_power"] = scale_col_with_power
 
@@ -146,7 +146,7 @@ def nn1(X, k=None, rvc=None):
   U = nn.theta_lst[-1]
   U = rvc_U(U, rvc)
   alpha = compute_alpha(X, U, rvc)
-  return U, alpha, U * alpha
+  return U, alpha, np.dot(U[:, :k], alpha[:k])
 
 models_dict["nn1"] = nn1
 
@@ -157,7 +157,7 @@ def nn1_scaled_X(X, k=None, rvc=None):
   U, _, _ = nn1(Xt, k)
   U = rvc_U(U, rvc)
   alpha = compute_alpha(X, U, rvc)
-  return U, alpha, U * alpha
+  return U, alpha, np.dot(U[:, :k], alpha[:k])
 
 
 models_dict["nn1_scaled_X"] = nn1_scaled_X
@@ -172,8 +172,7 @@ def partition_more_low_t2(X, k=None, rvc=None):
   U = svd(Xl)
   U = rvc_U(U, rvc)
   alpha = compute_alpha(X, U, rvc)
-
-  return U, alpha, U[:, :k] * alpha[:k]
+  return U, alpha, np.dot(U[:, :k], alpha[:k])
 
 models_dict["partition_more_low_t2"] = partition_more_low_t2
 
@@ -186,7 +185,7 @@ def scale_col_with_power_low_T2(X, k=None, rvc=None):
   U = svd(Xhat[:, :int(X.shape[1]/2)])
   U = rvc_U(U, rvc)
   alpha = compute_alpha(X, U, rvc)
-  return U, alpha, U[:, :k] * alpha[:k]
+  return U, alpha, np.dot(U[:, :k], alpha[:k])
 
 models_dict["scale_col_with_power_low_T2"] = scale_col_with_power_low_T2
 
@@ -198,7 +197,7 @@ def reg_svd(X, k=None, rvc=None):
   U = svd(Xt)
   U = rvc_U(U, rvc)
   alpha = compute_alpha(X, U, rvc)
-  return U, alpha, U[:, :k] * alpha[:k]
+  return U, alpha, np.dot(U[:, :k], alpha[:k])
 
 models_dict["reg_svd"] = reg_svd
 
@@ -209,6 +208,6 @@ def reg_svd_sq(X, k=None, rvc=None):
   U = svd(Xt)
   U = rvc_U(U, rvc)
   alpha = compute_alpha(X, U, rvc)
-  return U, alpha, U[:, :k] * alpha[:k]
+  return U, alpha, np.dot(U[:, :k], alpha[:k])
 
 models_dict["reg_svd_sq"] = reg_svd_sq

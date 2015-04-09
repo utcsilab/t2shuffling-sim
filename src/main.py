@@ -114,7 +114,7 @@ elif options.genFSE:
   if not options.T1vals:
     T1vals = np.array([500, 700, 1000, 1800]) * 1e-3
   else:
-    T1vals = np.matrix(sio.loadmat(options.T1vals)['T1vals'])
+    T1vals = sio.loadmat(options.T1vals)['T1vals']
   if not options.T2vals:
     T2vals = np.linspace(20e-3, 800e-3, N)
   else:
@@ -130,7 +130,7 @@ elif options.genFSE:
     ETL = options.ETL
   T1vals = np.ravel(T1vals)
   T2vals = np.ravel(T2vals)
-  X = np.matrix(gen_FSEmatrix(N, angles, ETL, e2s, TE, T1vals, T2vals))
+  X = gen_FSEmatrix(N, angles, ETL, e2s, TE, T1vals, T2vals)
   if options.saveFSE != None:
     print "Saving at " + options.saveFSE
     sio.savemat(options.saveFSE, {"X": X, "angles": angles, "N": N, "ETL":ETL, "e2s":e2s, "TE": TE, "T1vals":T1vals, "T2vals":T2vals})
@@ -138,14 +138,15 @@ elif options.genFSE:
 else:
 
   dct = sio.loadmat(options.loadFSE)
-  X = np.matrix(dct["X"])
-  angles = np.matrix(dct["angles"])
-  N = np.matrix(dct["N"])
-  ETL = np.matrix(dct["ETL"])
-  e2s = np.matrix(dct["e2s"])
-  TE = np.matrix(dct["TE"])
-  T1vals = np.matrix(dct["T1vals"])
-  T2vals = np.matrix(dct["T2vals"])
+  X = dct["X"]
+  angles = dct["angles"]
+  N = dct["N"]
+  ETL = dct["ETL"]
+  e2s = dct["e2s"]
+  TE = dct["TE"]
+  T1vals = dct["T1vals"]
+  T2vals = dct["T2vals"]
+
 
 if rvc == 'real':
     print 'real value constraint'
