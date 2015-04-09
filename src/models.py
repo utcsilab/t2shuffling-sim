@@ -162,6 +162,17 @@ models_dict["nn1_scaled_X"] = nn1_scaled_X
 
 
 def batch_nn(X, k=None, rvc=None):
+  """ This model gets index of the signal of the max perventage error and chooses "width" amount of
+      signals to the left and right of it (which are similar since X is sorted). It then trains the
+      neural net only on those 2*width values, and then repeats the process again.
+      
+      Tweakable parameters:
+        width - The number of signals to the left and right of the signal with the max percentage 
+                error. Note that the total number of signals selected is then 2 * width.
+        global_iter - Number of times width is chosen and the nn is trained on. 
+        nn_iter - Number of iteration nn uses to train on the 2*width signal.
+        alpha - the "jump" of the descent
+        lambda - the regularization paramter. """
   from metrics import get_metric
   nn = NN_simple([X.shape[0], k, X.shape[0]])
   nn.load_theta('../saves/batch_nn1_sim_theta.npy')
@@ -169,7 +180,7 @@ def batch_nn(X, k=None, rvc=None):
   U = rvc_U(nn.theta_lst[-1], rvc)
   alpha = compute_alpha(X, U, rvc)
 
-  param = 500 # Bigger the value, smaller the gobal error. Smaller the value, smaller the individual error.
+  width = 500 # Bigger the value, smaller the gobal error. Smaller the value, smaller the individual error.
   global_iter = 8
   nn_iter = 100
 
@@ -177,11 +188,11 @@ def batch_nn(X, k=None, rvc=None):
     print "Progress: %d / %d" % (i+1, global_iter) 
     perc, fro = get_metric(X, U * alpha, disp=False)
     idx = np.argmax(perc, axis=0)
-    if (idx < param):
-      idx = param
-    if idx > X.shape[1]- param - 1:
-      idx = X.shape[1] - param - 1
-    Xhat = X[:, idx-param:idx+param]
+    if (idx < width):
+      idx = width 
+    if idx > X.shape[1]- width - 1:
+      idx = X.shape[1] - width - 1
+    Xhat = X[:, idx-width:idx+width]
     nn.train(Xhat, Xhat, num_iter=nn_iter, alpha=1e-5, lmbda=0)
 
 #  nn.save_theta('../saves/batch_nn1_sim_theta.npy')
