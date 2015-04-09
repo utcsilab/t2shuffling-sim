@@ -12,7 +12,7 @@ class NN_simple:
     self.theta_lst = []
     for i in range(1, len(nodes_per_layer)):
       prev, curr = nodes_per_layer[i-1], nodes_per_layer[i]
-      self.theta_lst.append(np.matrix(np.random.rand(curr, prev), dtype=np.complex64))
+      self.theta_lst.append(np.random.rand(curr, prev).astype(np.complex64))
 
   def load_theta(self, theta_path):
     """ This assumes that theta list is saved as an npy file """
@@ -42,7 +42,7 @@ class NN_simple:
   def get_activation_layers(self, X):
     activation_layers = [X]
     for theta in self.theta_lst:
-      activation_layers.append(theta * activation_layers[-1])
+      activation_layers.append(np.dot(theta, activation_layers[-1]))
     return activation_layers
 
   def cost(self, X, y, lmbda=0):
@@ -59,19 +59,19 @@ class NN_simple:
     past_theta = None
     for theta in self.theta_lst[::-1]:
       if past_theta is None:
-        g = delta * activation_layers[-1].T
+        g = np.dot(delta, activation_layers[-1].conj().T)
         past_theta = theta
       else:
-        g = past_theta.T * (delta * activation_layers[-1].T)
-        past_theta = past_theta * theta
+        g = np.dot(past_theta.conj().T, np.dot(delta, activation_layers[-1].conj().T))
+        past_theta = np.dot(past_theta, theta)
       activation_layers.pop()
       grad.insert(0, g)
     return grad
 
 if __name__ == '__main__': 
   nn = NN_simple([2, 4, 2])
-  X = np.matrix('[1 2 ; 2 3 ; 3 2; 2 1; 5 4; 7 8  ; 3 1; 6  4;  7 5]').T
-  y = np.matrix('[3 -1; 5 -1; 5 1; 3 1; 9 1; 15 -1; 4 2; 10 2; 12 2]').T
+  X = np.array(np.matrix('[1 2 ; 2 3 ; 3 2; 2 1; 5 4; 7 8  ; 3 1; 6  4;  7 5]').T)
+  y = np.array(np.matrix('[3 -1; 5 -1; 5 1; 3 1; 9 1; 15 -1; 4 2; 10 2; 12 2]').T)
   c = nn.train(X, y, num_iter=1000, alpha=0.00005, verbose=True)
   import matplotlib.pyplot as plt
   plt.figure()
