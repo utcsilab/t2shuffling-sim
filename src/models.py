@@ -17,9 +17,9 @@ def svd(X):
 
 def compute_alpha(X, U, rvc=None):
   if rvc is None:
-    return np.dot(np.dot(np.linalg.inv(np.dot(U.H,  U)), U.H), X)
+    return np.dot(np.dot(inv(np.dot(U.H,  U)), U.H), X)
   else:
-    return np.dot(np.dot(np.linalg.inv(np.dot(U.T, U)), U.T), X)
+    return np.dot(np.dot(inv(np.dot(U.T, U)), U.T), X)
 
 
 def rvc_U(U, rvc=None):
@@ -111,7 +111,7 @@ models_dict["reg_grad_descent"] = reg_grad_descent
 def scale_col_no_power(X, k=None, rvc=None):
   """ This scales each signal by the inverse of its norm. Works
       pretty well! """
-  scales = np.diag(1/np.linalg.norm(X, ord=3, axis=0))
+  scales = np.diag(1/norm(X, ord=3, axis=0))
   Xhat = X * scales
   U = svd(Xhat)
   U = rvc_U(U, rvc)
@@ -123,7 +123,7 @@ models_dict["scale_col_no_power"] = scale_col_no_power
 
 def scale_col_with_power(X, k=None, rvc=None):
   """ Arbitrary raised scales to higher powers seems to work. """
-  scales = np.diag(1/np.linalg.norm(X, ord=3, axis=0)**2.5)
+  scales = np.diag(1/norm(X, ord=3, axis=0)**2.5)
   Xhat = X * scales
   U = svd(Xhat)
   U = rvc_U(U, rvc)
@@ -143,8 +143,7 @@ def nn1(X, k=None, rvc=None):
   #c = nn.train(X, X, num_iter=10, alpha=1e-20, lmbda=1e-5, verbose=True)
   c = nn.train(X, X, num_iter=2000000, alpha=1e-20, lmbda=1e-5, verbose=True)
   nn.save_theta('../saves/knee_low_res_nn1_theta.npy')
-  U = nn.theta_lst[-1]
-  U = rvc_U(U, rvc)
+  U = rvc_U(nn.theta_lst[-1], rvc)
   alpha = compute_alpha(X, U, rvc)
   return U, alpha, np.dot(U[:, :k], alpha[:k])
 
@@ -152,15 +151,44 @@ models_dict["nn1"] = nn1
 
 
 def nn1_scaled_X(X, k=None, rvc=None):
-  scales = np.diag(1/np.linalg.norm(X, ord=3, axis=0)**2.5)
+  scales = np.diag(1/norm(X, ord=3, axis=0)**2.5)
   Xt = X * scales
   U, _, _ = nn1(Xt, k)
   U = rvc_U(U, rvc)
   alpha = compute_alpha(X, U, rvc)
   return U, alpha, np.dot(U[:, :k], alpha[:k])
 
-
 models_dict["nn1_scaled_X"] = nn1_scaled_X
+
+
+def batch_nn(X, k=None, rvc=None):
+  from metrics import get_metric
+  nn = NN_simple([X.shape[0], k, X.shape[0]])
+  nn.load_theta('../saves/batch_nn1_sim_theta.npy')
+
+  U = rvc_U(nn.theta_lst[-1], rvc)
+  alpha = compute_alpha(X, U, rvc)
+
+  param = 500 # Bigger the value, smaller the gobal error. Smaller the value, smaller the individual error.
+  global_iter = 8
+  nn_iter = 100
+
+  for i in range(global_iter):
+    print "Progress: %d / %d" % (i+1, global_iter) 
+    perc, fro = get_metric(X, U * alpha, disp=False)
+    idx = np.argmax(perc, axis=0)
+    if (idx < param):
+      idx = param
+    if idx > X.shape[1]- param - 1:
+      idx = X.shape[1] - param - 1
+    Xhat = X[:, idx-param:idx+param]
+    nn.train(Xhat, Xhat, num_iter=nn_iter, alpha=1e-5, lmbda=0)
+
+#  nn.save_theta('../saves/batch_nn1_sim_theta.npy')
+
+  return U, alpha, np.dot(U[:, :k], alpha[:k])
+
+models_dict["batch_nn"] = batch_nn
 
 
 def partition_more_low_t2(X, k=None, rvc=None):
@@ -180,7 +208,7 @@ models_dict["partition_more_low_t2"] = partition_more_low_t2
 def scale_col_with_power_low_T2(X, k=None, rvc=None):
   """ Arbitrary raised scales to higher powers seems to work. This also only used
       low T2 values. This reduces max error, but does increase Fro norm. """
-  scales = np.diag(1/np.linalg.norm(X, ord=3, axis=0)**2.5)
+  scales = np.diag(1/norm(X, ord=3, axis=0)**2.5)
   Xhat = X * scales
   U = svd(Xhat[:, :int(X.shape[1]/2)])
   U = rvc_U(U, rvc)
@@ -192,7 +220,7 @@ models_dict["scale_col_with_power_low_T2"] = scale_col_with_power_low_T2
 
 def reg_svd(X, k=None, rvc=None):
   """ normalize each signal curve to norm 1. """
-  scales = np.diag(1/np.linalg.norm(X, ord=2, axis=0))
+  scales = np.diag(1/norm(X, ord=2, axis=0))
   Xt = X * scales
   U = svd(Xt)
   U = rvc_U(U, rvc)
@@ -203,7 +231,7 @@ models_dict["reg_svd"] = reg_svd
 
 
 def reg_svd_sq(X, k=None, rvc=None):
-  scales = np.diag(1/np.linalg.norm(X, ord=2, axis=0)**2)
+  scales = np.diag(1/norm(X, ord=2, axis=0)**2)
   Xt = X * scales
   U = svd(Xt)
   U = rvc_U(U, rvc)

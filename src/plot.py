@@ -19,7 +19,7 @@ def matrix_to_1Darray(matrix):
 
 
 def mksv_plot(ax, data, title, xlabel, ylabel, xstart=0, ylim=None, other_label=None):
-  if type(data) == np.matrixlib.defmatrix.matrix:
+  if type(data) != tuple:
     x_axis = np.arange(xstart, xstart + data.shape[0])
     ax.set_xlim(xstart, xstart + data.shape[0] - 1)
     ax.set_xticks(np.arange(xstart, xstart + data.shape[0], 2))
