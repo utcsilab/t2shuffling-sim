@@ -175,10 +175,8 @@ def batch_nn(X, k=None, rvc=None):
         lambda - the regularization paramter. """
   from metrics import get_metric
   nn = NN_simple([X.shape[0], k, X.shape[0]])
-  nn.load_theta('../saves/batch_nn1_sim_theta.npy')
 
-  U = rvc_U(nn.theta_lst[-1], rvc)
-  alpha = compute_alpha(X, U, rvc)
+  nn.load_theta('../saves/batch_nn1_sim_theta.npy')
 
   width = 500 # Bigger the value, smaller the gobal error. Smaller the value, smaller the individual error.
   global_iter = 8
@@ -196,6 +194,9 @@ def batch_nn(X, k=None, rvc=None):
     nn.train(Xhat, Xhat, num_iter=nn_iter, alpha=1e-5, lmbda=0)
 
 #  nn.save_theta('../saves/batch_nn1_sim_theta.npy')
+
+  U = rvc_U(nn.theta_lst[-1], rvc)
+  alpha = compute_alpha(X, U, rvc)
 
   return U, alpha, np.dot(U[:, :k], alpha[:k])
 
