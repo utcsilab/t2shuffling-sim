@@ -182,6 +182,9 @@ def batch_nn(X, k=None, rvc=None):
   global_iter = 8
   nn_iter = 100
 
+  U = rvc_U(nn.theta_lst[-1], rvc)
+  alpha = compute_alpha(X, U, rvc)
+
   for i in range(global_iter):
     print "Progress: %d / %d" % (i+1, global_iter) 
     perc, fro = get_metric(X, U * alpha, disp=False)
@@ -192,15 +195,64 @@ def batch_nn(X, k=None, rvc=None):
       idx = X.shape[1] - width - 1
     Xhat = X[:, idx-width:idx+width]
     nn.train(Xhat, Xhat, num_iter=nn_iter, alpha=1e-5, lmbda=0)
+    U = rvc_U(nn.theta_lst[-1], rvc)
+    alpha = compute_alpha(X, U, rvc)
 
 #  nn.save_theta('../saves/batch_nn1_sim_theta.npy')
-
-  U = rvc_U(nn.theta_lst[-1], rvc)
-  alpha = compute_alpha(X, U, rvc)
 
   return U, alpha, np.dot(U[:, :k], alpha[:k])
 
 models_dict["batch_nn"] = batch_nn
+
+
+def batch_nn_svd(X, k=None, rvc=None):
+  """ This tries to do what batch_nn does, but instead of 
+      doing the initial training for the thetas, it uses
+      the svd as weights instead. """
+  from metrics import get_metric
+  
+  U = svd(X)
+  nn = NN_simple([0, 0, 0])
+  nn.theta_lst[0] = inv(U)[:k, :]
+  nn.theta_lst[1] = U[:, :k]
+
+  width = np.floor(X.shape[1]/32) # Bigger the value, smaller the gobal error. Smaller the value, smaller the individual error.
+  global_iter = 512
+  nn_iter = 100
+
+  U = rvc_U(nn.theta_lst[-1], rvc)
+  alpha = compute_alpha(X, U, rvc)
+
+  past_perc, past_fro = get_metric(X, U * alpha, disp=False)
+  past_perc = np.max(past_perc)
+
+  for i in range(global_iter):
+
+    print "Progress: %d / %d" % (i+1, global_iter)
+
+    perc, fro = get_metric(X, np.dot(U, alpha), disp=True)
+
+    if np.max(perc) > past_perc and fro > past_fro:
+      print "Ending to prevent blow-up"
+      break
+
+    idx = np.argmax(perc, axis=0)
+    if (idx < width):
+      idx = width
+    if idx > X.shape[1]- width - 1:
+      idx = X.shape[1] - width - 1
+
+    Xhat = X[:, idx-width:idx+width]
+    nn.train(Xhat, Xhat, num_iter=nn_iter, alpha=1e-3, lmbda=0)
+
+    U = rvc_U(nn.theta_lst[-1], rvc)
+    alpha = compute_alpha(X, U, rvc)
+
+    past_perc, past_fro = np.max(perc), fro
+
+  return U, alpha, np.dot(U[:, :k], alpha[:k])
+  
+models_dict["batch_nn_svd"] = batch_nn_svd
 
 
 def partition_more_low_t2(X, k=None, rvc=None):

@@ -169,7 +169,7 @@ for m in lst:
   model = models_dict[m]
   k = options.k
   U, alpha, X_hat = model(X, options.k, rvc)
-  print "Results"
+  print "Results:"
   pnorm, fro_perc_err = get_metric(X, X_hat)
   if not k:
     k = U.shape[1]
@@ -194,10 +194,10 @@ if options.save_imgs != None:
 
 if options.save_basis != None:
   for m in results.keys():
-    U = np.array(results[m]["U"], dtype=np.complex64)
+    U = results[m]["U"]
     k = results[m]['k']
     if U.shape[1] < U.shape[0]:
-        U = np.hstack((U, np.zeros((U.shape[0], U.shape[0] - k))))
+      U = np.hstack((U, np.zeros((U.shape[0], U.shape[0] - k))))
 
     for i in range(5):
       U = np.expand_dims(U, axis=0)
