@@ -7,7 +7,6 @@ import numpy as np
 
 def gen_FSEmatrix(N, angles_rad, ETL, e2s, TE, T1vals, T2vals):
   T = len(angles_rad)
-  N = len(T2vals) 
 
   T1 = np.sort(T1vals)
   T2 = np.sort(T2vals)

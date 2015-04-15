@@ -1,24 +1,23 @@
 #!/usr/bin/env python
 
 
-from __future__     import division
-from optparse       import OptionParser
-from os             import system
-from models         import models_dict
-from cfl            import readcfl, writecfl, cfl2sqcfl, sqcfl2mat, mat2sqcfl
-from metrics        import get_metric
-from plot           import plot_simulation, plot_cfl_signals
-from gen_FSEmatrix  import gen_FSEmatrix
-from sys            import argv
-from warnings       import warn
+from __future__           import division
+from optparse             import OptionParser
+from os                   import system
+from models               import models_dict
+from cfl                  import readcfl, writecfl, cfl2sqcfl, sqcfl2mat, mat2sqcfl
+from metrics              import get_metric
+from plot                 import plot_simulation, plot_cfl_signals
+from gen_FSEmatrix        import gen_FSEmatrix
+from sys                  import argv
+from warnings             import warn
+from multilayer_regressor import multilayer_regressor as mr
 
 
 import numpy as np
 import scipy.io as sio
 
 
-load_FSEpath = "../data/FSEmatrix.mat"
-cfl_path = "../basis/"
 time_stamp = ""
 
 
@@ -26,8 +25,18 @@ parser = OptionParser()
 
 # simulation options
 parser.add_option("--genFSE", dest="genFSE", action="store_true", default=False, help="Set this flag if you want to generate a simulation")
-parser.add_option("--loadFSE", dest="loadFSE", type=str, default=False, help="Pass in path to simulation mat FILE.")
-parser.add_option("--saveFSE", dest="saveFSE", type=str, default=None, help="Pass in path to file to save simulation.")
+parser.add_option("--loadFSE", dest="loadFSE", type=str, default=None, help="Pass in path to simulation mat FILE.")
+parser.add_option("--saveFSE", dest="saveFSE", type=str, default=None, help="Pass in path (with file name) to file to save simulation.")
+
+# estimator options
+parser.add_option("--estimator", dest="estimator", action="store_true", default=False, help="Set this flag if you want to run the estimator.")
+parser.add_option("--train", dest="train", action="store_true", default=False, help="Set this flag if you want to train the estimator.")
+parser.add_option("--predict", dest="predict", action="store_true", default=False, help="Set this flag if you want to see the predictions.")
+parser.add_option("--est-iter", dest="estiter", type=int, default=100, help="Number of iterations when training estimator.")
+parser.add_option("--loadEst", dest="loadEst", type=str, default=None, help="Pass in path to estimator npy file.")
+parser.add_option("--saveEst", dest="saveEst", type=str, default=None, help="Pass in path (with file name) to file to save estimator.")
+
+# constraint options
 parser.add_option("--rvc", dest="rvc", action="store_true", default=False, help="Real value constraint on basis.")
 parser.add_option("--avc", dest="avc", action="store_true", default=False, help="Absolute value constraint on basis.")
 
@@ -58,17 +67,19 @@ parser.add_option("--set_basis_name", dest="basis_name", type=str, default=None,
 
 options, args = parser.parse_args()
 
+
 if len(argv) == 1:
   parser.print_help()
-  exit(1)
+  exit(0)
+
 
 if options.print_models:
-    for key in models_dict:
-        if models_dict[key].__doc__ is not None:
-            print '\t'.join(('"%s"' % key , models_dict[key].__doc__))
-        else:
-            print '"%s"' % key
-    exit(0)
+  for key in models_dict:
+    if models_dict[key].__doc__ is not None:
+      print '\t'.join(('"%s"' % key , models_dict[key].__doc__))
+    else:
+     print '"%s"' % key
+  exit(0)
 
 
 assert (options.cfl or options.loadFSE or options.genFSE), "Please pass in a cfl file XOR an angles file XOR an FSEsim."
@@ -77,13 +88,13 @@ assert int(options.cfl != None) + int(options.loadFSE != None) + int(options.gen
 
 assert not (options.rvc and options.avc), "Please choose real-value NAND abs-value constraint."
 
+
 if options.rvc:
     rvc = 'real'
 elif options.avc:
     rvc = 'abs'
 else:
     rvc = None
-
 
 
 if options.save_imgs:
@@ -99,9 +110,11 @@ if options.cfl:
 
 elif options.genFSE: 
 
-  time_stamp = "." + options.angles.split('.')[-1] 
+  assert options.angles is not None, "In order to generate FSEmatrix, you must pass in an angles file."
+  time_stamp = options.angles.split('.')[-1] 
   try:
     int(time_stamp)
+    time_stamp = "." + time_stamp
   except ValueError:
     time_stamp = "" 
   except AssertionError:
@@ -132,8 +145,8 @@ elif options.genFSE:
   T2vals = np.ravel(T2vals)
   X = gen_FSEmatrix(N, angles, ETL, e2s, TE, T1vals, T2vals)
   if options.saveFSE != None:
-    print "Saving at " + options.saveFSE
-    sio.savemat(options.saveFSE, {"X": X, "angles": angles, "N": N, "ETL":ETL, "e2s":e2s, "TE": TE, "T1vals":T1vals, "T2vals":T2vals})
+    print "Saving as " + options.saveFSE + time_stamp
+    sio.savemat(options.saveFSE + time_stamp, {"X": X, "angles": angles, "N": N, "ETL":ETL, "e2s":e2s, "TE": TE, "T1vals":T1vals, "T2vals":T2vals})
 
 else:
 
@@ -154,6 +167,34 @@ if rvc == 'real':
 elif rvc == 'abs':
     print 'abs value constraint'
     X = np.abs(X)
+
+
+# TODO: Abstract this into a different file.
+if options.estimator:
+  #scales = np.diag(1/np.linalg.norm(X, ord=2, axis=0))
+  scales = np.diag(1/np.max(X,  axis=0))
+  X = np.vstack((np.ones((1, X.shape[1])), X))
+  est = mr([X.shape[0], 2])
+  if options.loadEst is not None:
+    est.load_theta(options.loadEst)
+  if options.train:
+    assert options.loadFSE is not None, "To train, please pass in a simulated FSE matrix"
+    y = np.zeros((2, X.shape[1]))
+    c = 0
+    for T2 in np.squeeze(T2vals):
+      for T1 in np.squeeze(T1vals):
+        y[0, c] = T1
+        y[1, c] = T2
+        c += 1
+    est.train(X, y, num_iter=options.estiter, lmbda=0, verbose=True)
+    print "Test set performance: %f" % est.score(X, y)
+  if options.saveEst is not None:
+    print "Saving estimator: " + options.saveEst
+    est.save_theta(options.saveEst)
+  if options.predict:
+    assert options.loadEst or options.train, "No estimator passed in."
+    estimated_map = est.get_activation_layers(X)[-1]
+
 
 
 lst = options.model

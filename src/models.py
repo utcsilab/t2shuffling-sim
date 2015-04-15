@@ -216,8 +216,8 @@ def batch_nn_svd(X, k=None, rvc=None):
   nn.theta_lst[0] = inv(U)[:k, :]
   nn.theta_lst[1] = U[:, :k]
 
-  #width = np.floor(X.shape[1]/64) # Bigger the value, smaller the gobal error. Smaller the value, smaller the individual error.
-  width = 8 # Bigger the value, smaller the gobal error. Smaller the value, smaller the individual error.
+  width = np.floor(X.shape[1]/64) # Bigger the value, smaller the gobal error. Smaller the value, smaller the individual error.
+  #width = 8 # Bigger the value, smaller the gobal error. Smaller the value, smaller the individual error.
   global_iter = 64
   nn_iter = 100
 
@@ -231,7 +231,7 @@ def batch_nn_svd(X, k=None, rvc=None):
 
     print "Progress: %d / %d" % (i+1, global_iter)
 
-    perc, fro = get_metric(X, np.dot(U, alpha), disp=True)
+    perc, fro = get_metric(X, np.dot(U, alpha), disp=False)
 
     idx = np.argmax(perc, axis=0)
     if (idx < width):
@@ -239,7 +239,7 @@ def batch_nn_svd(X, k=None, rvc=None):
     if idx > X.shape[1]- width - 1:
       idx = X.shape[1] - width - 1
 
-    Xhat = X[:, idx-width:idx+width+1]
+    Xhat = X[:, idx-width:idx+width]
     nn.train(Xhat, Xhat, num_iter=nn_iter, lmbda=0)
 
     U = rvc_U(nn.theta_lst[-1], rvc)

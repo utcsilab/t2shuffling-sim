@@ -5,6 +5,8 @@ from __future__ import division
 import numpy as np
 import sklearn as skl
 
+norm = np.linalg.norm
+
 class multilayer_regressor(skl.base.RegressorMixin):
   """ This is a multilayer regression estimator. """
 
@@ -53,11 +55,13 @@ class multilayer_regressor(skl.base.RegressorMixin):
     past_theta = None
     for theta in self.theta_lst[::-1]:
       if past_theta is None:
-        alpha = 0.9 * (1/(2 * np.linalg.norm(activation_layers[-1], ord=2)**2))
+        #alpha = 0.9 * (1/(2 * np.linalg.norm(activation_layers[-1], ord=2)**2))
+        alpha = 0.9 * (1/(norm(activation_layers[-1], ord=2)**2))
         g = alpha * np.dot(delta, activation_layers[-1].conj().T)
         past_theta = theta
       else:
-        alpha = 0.9 * (1/(2 * np.linalg.norm(np.dot(past_theta.conj().T, activation_layers[-1]), ord=2)**2))
+        #alpha = 0.9 * (1/(2 * np.linalg.norm(np.dot(past_theta.conj().T, activation_layers[-1]), ord=2)**2))
+        alpha = 0.9 * (1/(norm(past_theta.conj(), ord=2) * norm(activation_layers[-1], ord=2))**2)
         g = alpha * np.dot(past_theta.conj().T, np.dot(delta, activation_layers[-1].conj().T))
         past_theta = np.dot(past_theta, theta)
       activation_layers.pop()
@@ -66,8 +70,8 @@ class multilayer_regressor(skl.base.RegressorMixin):
 
   def score(self, X, y, sample_weigth=None):
     y_pred = self.get_activation_layers(X)[-1]
-    u = np.linalg.norm(y - y_pred)**2
-    v = np.linalg.norm(y - y.mean())**2
+    u = norm(y - y_pred)**2
+    v = norm(y - y.mean())**2
     return 1 - u/v
 
 if __name__ == '__main__': 
