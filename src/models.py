@@ -1,6 +1,6 @@
 from __future__ import division
 from scipy.optimize import fmin
-from nn_simple import NN_simple
+from multilayer_regressor import multilayer_regressor as mr
 
 import numpy as np
 
@@ -136,12 +136,12 @@ models_dict["scale_col_with_power"] = scale_col_with_power
 def nn1(X, k=None, rvc=None):
   if k is None:
     k = 3
-  nn = NN_simple([X.shape[0], k, X.shape[0]])
+  nn = mr([X.shape[0], k, X.shape[0]])
   
   #nn.load_theta('../saves/nn1_theta.npy')
   #c = nn.train(X, X, num_iter=2000000, alpha=1e-9, lmbda=10)
   #c = nn.train(X, X, num_iter=10, alpha=1e-20, lmbda=1e-5, verbose=True)
-  c = nn.train(X, X, num_iter=2000000, alpha=1e-20, lmbda=1e-5, verbose=True)
+  c = nn.train(X, X, num_iter=2000000, lmbda=1e-5, verbose=True)
   nn.save_theta('../saves/knee_low_res_nn1_theta.npy')
   U = rvc_U(nn.theta_lst[-1], rvc)
   alpha = compute_alpha(X, U, rvc)
@@ -174,7 +174,7 @@ def batch_nn(X, k=None, rvc=None):
         alpha - the "jump" of the descent
         lambda - the regularization paramter. """
   from metrics import get_metric
-  nn = NN_simple([X.shape[0], k, X.shape[0]])
+  nn = mr([X.shape[0], k, X.shape[0]])
 
   nn.load_theta('../saves/batch_nn1_sim_theta.npy')
 
@@ -194,7 +194,7 @@ def batch_nn(X, k=None, rvc=None):
     if idx > X.shape[1]- width - 1:
       idx = X.shape[1] - width - 1
     Xhat = X[:, idx-width:idx+width]
-    nn.train(Xhat, Xhat, num_iter=nn_iter, alpha=1e-5, lmbda=0)
+    nn.train(Xhat, Xhat, num_iter=nn_iter, lmbda=0)
     U = rvc_U(nn.theta_lst[-1], rvc)
     alpha = compute_alpha(X, U, rvc)
 
@@ -212,18 +212,19 @@ def batch_nn_svd(X, k=None, rvc=None):
   from metrics import get_metric
   
   U = svd(X)
-  nn = NN_simple([0, 0, 0])
+  nn = mr([0, 0, 0])
   nn.theta_lst[0] = inv(U)[:k, :]
   nn.theta_lst[1] = U[:, :k]
 
-  width = np.floor(X.shape[1]/64) # Bigger the value, smaller the gobal error. Smaller the value, smaller the individual error.
-  global_iter = 512
+  #width = np.floor(X.shape[1]/64) # Bigger the value, smaller the gobal error. Smaller the value, smaller the individual error.
+  width = 8 # Bigger the value, smaller the gobal error. Smaller the value, smaller the individual error.
+  global_iter = 64
   nn_iter = 100
 
   U = rvc_U(nn.theta_lst[-1], rvc)
   alpha = compute_alpha(X, U, rvc)
 
-  past_perc, past_fro = get_metric(X, U * alpha, disp=False)
+  past_perc, past_fro = get_metric(X, np.dot(U, alpha), disp=False)
   past_perc = np.max(past_perc)
 
   for i in range(global_iter):
@@ -238,8 +239,8 @@ def batch_nn_svd(X, k=None, rvc=None):
     if idx > X.shape[1]- width - 1:
       idx = X.shape[1] - width - 1
 
-    Xhat = X[:, idx-width:idx+width]
-    nn.train(Xhat, Xhat, num_iter=nn_iter, alpha=1e-3, lmbda=0)
+    Xhat = X[:, idx-width:idx+width+1]
+    nn.train(Xhat, Xhat, num_iter=nn_iter, lmbda=0)
 
     U = rvc_U(nn.theta_lst[-1], rvc)
     alpha = compute_alpha(X, U, rvc)
