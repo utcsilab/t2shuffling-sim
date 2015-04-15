@@ -1,0 +1,13 @@
+opetl	80
+echoes2skip	2
+esp	4744
+num_et	100
+kr_jitter_power	0.00
+kr_jitter_start	0
+kr_min_eddy	1
+kr_wy	4
+kr_wz	4
+kr_resample	0
+kr_cal_first	0
+kr_cal_size	12
+kr_dupsample	8
