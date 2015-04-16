@@ -28,13 +28,6 @@ parser.add_option("--genFSE", dest="genFSE", action="store_true", default=False,
 parser.add_option("--loadFSE", dest="loadFSE", type=str, default=None, help="Pass in path to simulation mat FILE.")
 parser.add_option("--saveFSE", dest="saveFSE", type=str, default=None, help="Pass in path (with file name) to file to save simulation.")
 
-# estimator options
-parser.add_option("--estimator", dest="estimator", action="store_true", default=False, help="Set this flag if you want to run the estimator.")
-parser.add_option("--train", dest="train", action="store_true", default=False, help="Set this flag if you want to train the estimator.")
-parser.add_option("--predict", dest="predict", action="store_true", default=False, help="Set this flag if you want to see the predictions.")
-parser.add_option("--est-iter", dest="estiter", type=int, default=100, help="Number of iterations when training estimator.")
-parser.add_option("--loadEst", dest="loadEst", type=str, default=None, help="Pass in path to estimator npy file.")
-parser.add_option("--saveEst", dest="saveEst", type=str, default=None, help="Pass in path (with file name) to file to save estimator.")
 
 # constraint options
 parser.add_option("--rvc", dest="rvc", action="store_true", default=False, help="Real value constraint on basis.")
@@ -167,33 +160,6 @@ if rvc == 'real':
 elif rvc == 'abs':
     print 'abs value constraint'
     X = np.abs(X)
-
-
-# TODO: Abstract this into a different file.
-if options.estimator:
-  #scales = np.diag(1/np.linalg.norm(X, ord=2, axis=0))
-  scales = np.diag(1/np.max(X,  axis=0))
-  X = np.vstack((np.ones((1, X.shape[1])), X))
-  est = mr([X.shape[0], 2])
-  if options.loadEst is not None:
-    est.load_theta(options.loadEst)
-  if options.train:
-    assert options.loadFSE is not None, "To train, please pass in a simulated FSE matrix"
-    y = np.zeros((2, X.shape[1]))
-    c = 0
-    for T2 in np.squeeze(T2vals):
-      for T1 in np.squeeze(T1vals):
-        y[0, c] = T1
-        y[1, c] = T2
-        c += 1
-    est.train(X, y, num_iter=options.estiter, lmbda=0, verbose=True)
-    print "Test set performance: %f" % est.score(X, y)
-  if options.saveEst is not None:
-    print "Saving estimator: " + options.saveEst
-    est.save_theta(options.saveEst)
-  if options.predict:
-    assert options.loadEst or options.train, "No estimator passed in."
-    estimated_map = est.get_activation_layers(X)[-1]
 
 
 lst = options.model
