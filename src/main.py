@@ -196,7 +196,6 @@ if options.estimator:
     estimated_map = est.get_activation_layers(X)[-1]
 
 
-
 lst = options.model
 if options.add_control:
   lst.append('simple_svd')
