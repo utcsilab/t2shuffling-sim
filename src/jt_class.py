@@ -25,6 +25,8 @@ parser.add_option("--num_iter" ,dest="num_iter" ,type=int ,default=100  ,help="N
 
 options, args = parser.parse_args()
 
+# TODO  Divide training so that it uses a cross validation set and a test set so as to check recall.
+
 if len(argv) == 1:
   parser.print_help()
   exit(0)
@@ -75,7 +77,7 @@ for i in range(len(options.models)):
     save = options.save[i]
   if options.load:
     load = options.load[i]
-  print "Running " + m
+  print "Running " + m + "."
   guess = models[m](X, y, reg_lambda=0, train=options.train, predict=options.predict, num_iters=options.num_iter, save=save, load=load, verbose=False)
   res = {'X': X, 'action': action, 'y_true': y, 'T1': T1vals, 'T2': T2vals, 'y_guess': guess}
   results[m] = res
