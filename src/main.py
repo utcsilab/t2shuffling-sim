@@ -11,7 +11,6 @@ from plot                 import plot_simulation, plot_cfl_signals
 from gen_FSEmatrix        import gen_FSEmatrix
 from sys                  import argv
 from warnings             import warn
-from multilayer_regressor import multilayer_regressor as mr
 
 
 import numpy as np

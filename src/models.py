@@ -1,6 +1,6 @@
 from __future__ import division
 from scipy.optimize import fmin
-from multilayer_regressor import multilayer_regressor as mr
+from regressors import Multilayer_Regressor as mr
 
 import numpy as np
 
