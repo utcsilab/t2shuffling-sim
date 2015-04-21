@@ -107,9 +107,9 @@ class Multilayer_Regressor(Regressor, skl.base.RegressorMixin):
     v = norm(y - y.mean())**2
     return 1 - u/v
 
-def Multilayer_Logistic_Regressor(Regressor, skl.base.ClassifierMixin):
+class Multilayer_Logistic_Regressor(Regressor, skl.base.ClassifierMixin):
 
-    def __init__(self, nodes_per_layer):
+  def __init__(self, nodes_per_layer):
     self.theta_lst = []
     for i in range(1, len(nodes_per_layer)):
       prev, curr = nodes_per_layer[i-1], nodes_per_layer[i]
@@ -147,7 +147,7 @@ def Multilayer_Logistic_Regressor(Regressor, skl.base.ClassifierMixin):
 
   def get_az_layers(self, X):
     activation_layers = [X]
-    z_layers = [X]
+    z_layers = []
     for theta in self.theta_lst:
       layer = np.dot(theta, activation_layers[-1])
       z_layers.append(layer)
@@ -155,31 +155,35 @@ def Multilayer_Logistic_Regressor(Regressor, skl.base.ClassifierMixin):
     return z_layers, activation_layers
 
   def theta_gradients(self, X, y):
-    # TODO
+#TODO: Remove below line and figure out best step size.
+    alpha = 0.1
     z_layers, activation_layers = self.get_az_layers(X)
-    #delta = - (y - activation_layers[-1]);
-    #activation_layers.pop()
-    #grad = []
-    #past_theta = None
-    #for theta in self.theta_lst[::-1]:
-    #  if past_theta is None:
-    #    alpha = 0.9 * (1/(norm(activation_layers[-1], ord=2)**2))
-    #    g = alpha * np.dot(delta, activation_layers[-1].conj().T)
-    #    past_theta = theta
-    #  else:
-    #    alpha = 0.9 * (1/(norm(past_theta.conj(), ord=2) * norm(activation_layers[-1], ord=2))**2)
-    #    g = alpha * np.dot(past_theta.conj().T, np.dot(delta, activation_layers[-1].conj().T))
-    #    past_theta = np.dot(past_theta, theta)
-    #  activation_layers.pop()
-    #  grad.insert(0, g)
+    delta = - (y - activation_layers[-1]);
+    activation_layers.pop()
+    grad = []
+    past_theta = None
+    sig_grad = None
+    for theta in self.theta_lst[::-1]:
+      if past_theta is None:
+        sig_grad = sigmoid_gradient(z_layers[-1])
+#TODO: Figure out best stepsize        alpha = 0.9 * (1/(norm(activation_layers[-1], ord=2)**2))
+        g = alpha * np.dot(delta * sig_grad, activation_layers[-1].conj().T)
+        past_theta = theta
+      else:
+        sig_grad = np.dot(sig_grad, sigmoid_gradient(z_layers[-1]).T)
+#TODO: Figure out best stepsize        alpha = 0.9 * (1/(norm(past_theta.conj(), ord=2) * norm(activation_layers[-1], ord=2))**2)
+        g = alpha * np.dot((past_theta * sig_grad).conj().T, np.dot(delta, activation_layers[-1].conj().T))
+        past_theta = np.dot(past_theta, theta)
+      activation_layers.pop()
+      z_layers.pop()
+      grad.insert(0, g)
     return grad
 
   def score(self, X, y, sample_weigth=None):
-    y_pred = self.get_prediction(X)
+    y_pred = self.get_az_layers(X)[1][-1]
     u = norm(y - y_pred)**2
     v = norm(y - y.mean())**2
     return 1 - u/v
-
    
 
 if __name__ == '__main__': 
@@ -187,15 +191,16 @@ if __name__ == '__main__':
   from sklearn import cross_validation as cv
   from sklearn import datasets
 
+  print "Multilayer Regressor"
   iris = datasets.load_iris()
   X_train, X_test, y_train, y_test = cv.train_test_split(iris.data, iris.target, test_size=0.4, random_state=0)
   mr = Multilayer_Regressor([X_train.shape[1], 1])
-  print type(mr).__bases__
   c = mr.train(X_train.T, y_train.T)
   print "Score on cross-validation set: %f" % mr.score(X_test.T, y_test.T)
-  plt.figure()
-  plt.plot(abs(c))
-  plt.title('Score per iteration')
-  plt.xlabel('Iteration')
-  plt.ylabel('Score')
-  plt.show()
+
+  print "Multilayer Logistic Regressor"
+  digits = datasets.load_digits()
+  X_train, X_test, y_train, y_test = cv.train_test_split(digits.data, digits.target, test_size=0.4, random_state=0)
+  nn = Multilayer_Logistic_Regressor([X_train.shape[1], X_train.shape[1], 10])
+  c = nn.train(X_train.T, y_train.T, verbose=True, num_iter=100)
+  print "Score on cross-validation set: %f" % nn.score(X_test.T, y_test.T)
