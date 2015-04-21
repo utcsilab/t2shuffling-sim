@@ -15,6 +15,7 @@ from warnings             import warn
 
 import numpy as np
 import scipy.io as sio
+import sys
 
 
 time_stamp = ""
@@ -62,7 +63,7 @@ options, args = parser.parse_args()
 
 if len(argv) == 1:
   parser.print_help()
-  exit(0)
+  sys.exit(0)
 
 
 if options.print_models:
@@ -71,7 +72,7 @@ if options.print_models:
       print '\t'.join(('"%s"' % key , models_dict[key].__doc__))
     else:
      print '"%s"' % key
-  exit(0)
+  sys.exit(0)
 
 
 assert (options.cfl or options.loadFSE or options.genFSE), "Please pass in a cfl file XOR an angles file XOR an FSEsim."
