@@ -156,7 +156,8 @@ class Multilayer_Logistic_Regressor(Regressor, skl.base.ClassifierMixin):
     return z_layers, activation_layers
 
   def theta_gradients(self, X, y):
-    z_layers, acitavtion_layers = self.get_az_layers(X)
+    print 'TODO - theta_Gradients'
+    exit(0)
 
   def score(self, X, y, sample_weigth=None):
     y_pred = self.get_prediction(X)
