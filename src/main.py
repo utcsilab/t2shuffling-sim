@@ -9,13 +9,12 @@ from cfl                  import readcfl, writecfl, cfl2sqcfl, sqcfl2mat, mat2sq
 from metrics              import get_metric
 from plot                 import plot_simulation, plot_cfl_signals
 from gen_FSEmatrix        import gen_FSEmatrix
-from sys                  import argv
+from sys                  import argv, exit
 from warnings             import warn
 
 
 import numpy as np
 import scipy.io as sio
-import sys
 
 
 time_stamp = ""
@@ -63,7 +62,7 @@ options, args = parser.parse_args()
 
 if len(argv) == 1:
   parser.print_help()
-  sys.exit(0)
+  exit(0)
 
 
 if options.print_models:
@@ -72,7 +71,7 @@ if options.print_models:
       print '\t'.join(('"%s"' % key , models_dict[key].__doc__))
     else:
      print '"%s"' % key
-  sys.exit(0)
+  exit(0)
 
 
 assert (options.cfl or options.loadFSE or options.genFSE), "Please pass in a cfl file XOR an angles file XOR an FSEsim."
