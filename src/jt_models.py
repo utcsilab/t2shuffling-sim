@@ -34,3 +34,23 @@ def linear_regressor(X, y=None, reg_lambda=0, train=False, predict=True, num_ite
   return est.get_prediction(X)
 
 jt_models_dict["linear_regressor"] = linear_regressor
+
+
+def t2_nn_class(X, y=None, reg_lambda=0, train=False, predict=True, num_iters=100, save=None, load=None, verbose=False):
+  """ A neural network classifier that has 4 activation layers and classifies into classes = number of y rows. """
+  est = Multilayer_Logistic_Regressor([X.shape[0], X.shape[0], X.shape[0], y.shape[0]])
+  if save is not None:
+    est.load_theta(load)
+  if train:
+    assert y.any() is not None, "Please pass in a label matrix"
+    est.train(X, y, num_iter=num_iters, lmbda=reg_lambda, verbose=verbose)
+    print "Test set performance: %f" % est.score(X, y)
+  if save is not None:
+    print "Saving estimator: " + save
+    est.save_theta(save)
+  if predict:
+    assert load or train, "No estimator passed in."
+  return est.get_prediction(X)
+
+jt_models_dict["t2_nn_class"] = t2_nn_class
+
