@@ -143,16 +143,18 @@ class Multilayer_Logistic_Regressor(Regressor, skl.base.ClassifierMixin):
 
 
   def get_prediction(self, X, threshold=None):
+    z_layers, activation_layers = self.get_az_layers(X)
     if threshold is None:
-      return self.get_az_layers(X)[-1][1]
-    return self.get_az_layers(X)[-1][1].all() > threshold
+      return activation_layers[-1]
+    return activation_layers[-1].all() > threshold
 
   def get_az_layers(self, X):
     activation_layers = [X]
-    z_layers=[None]
+    z_layers=[]
     for theta in self.theta_lst:
-      z_layers.append(np.dot(theta, activation_layers[-1]))
-      activation_layers.append(sigmoid(z_layers[-1]))
+      layer = theta.dot(activation_layers[-1])
+      z_layers.append(layer)
+      activation_layers.append(sigmoid(layer))
     return z_layers, activation_layers
 
   def theta_gradients(self, X, y):
@@ -160,17 +162,19 @@ class Multilayer_Logistic_Regressor(Regressor, skl.base.ClassifierMixin):
     delta = - (y - activation_layers.pop());
     grad = []
     past_theta = None
+    sig_grad = np.ones((y.shape[0], y.shape[0]))
     for theta in self.theta_lst[::-1]:
       a = activation_layers.pop()
       sig_grad = sigmoid_gradient(z_layers.pop())
       if past_theta is None:
         alpha = 0.9 * (1/(norm(a, ord=2)**2))
-        g = alpha * np.dot(delta, a.conj().T)
+        g = alpha * np.dot(delta * sig_grad, a.conj().T)
         past_theta = theta
       else:
-        alpha = 0.9 * (1/(norm(past_theta.conj(), ord=2) * norm(a, ord=2)**2))
-        delta = delta * sigmoid_gradient(z_layers.pop())
-        g = alpha * np.dot(past_theta.conj().T, np.dot(delta, a.conj().T))
+        alpha = 0.9 * (1/norm(a, ord=2)**2)
+# TODO: Figure out how past sig_grads can be used. don't throw away that information.
+        t = np.dot(past_theta.conj().T, delta) * sig_grad
+        g = alpha * np.dot(t, a.conj().T)
         past_theta = np.dot(past_theta, theta)
       grad.insert(0, g)
     return grad
@@ -202,7 +206,7 @@ if __name__ == '__main__':
   
   X_train, X_test, y_train, y_test = cv.train_test_split(digits.data, target.T, test_size=0.4, random_state=0)
   X_train, X_test, y_train, y_test = X_train.T, X_test.T, y_train.T, y_test.T
-  nn = Multilayer_Logistic_Regressor([X_train.shape[0], X_train.shape[0], 10])
+  nn = Multilayer_Logistic_Regressor([X_train.shape[0], X_train.shape[0], X_train.shape[0], 10])
   #nn = Multilayer_Logistic_Regressor([X_train.shape[0], 10])
   c = nn.train(X_train, y_train, num_iter=100, verbose=True)
   print "Score on cross-validation set: %f" % nn.score(X_test, y_test)
