@@ -1,5 +1,5 @@
 from __future__           import division
-from regressors           import Regressor, Multilayer_Regressor
+from regressors           import *
 
 import numpy as np
 
@@ -20,7 +20,7 @@ def linear_regressor(X, y=None, reg_lambda=0, train=False, predict=True, num_ite
   """ A simple regressor that tries to find a linear transformation
       from signal to t1-t2 pair. """
   est = Multilayer_Regressor([X.shape[0], 2])
-  if save is not None:
+  if load is not None:
     est.load_theta(load)
   if train:
     assert y.any() is not None, "Please pass in a label matrix"
@@ -39,7 +39,7 @@ jt_models_dict["linear_regressor"] = linear_regressor
 def t2_nn_class(X, y=None, reg_lambda=0, train=False, predict=True, num_iters=100, save=None, load=None, verbose=False):
   """ A neural network classifier that has 4 activation layers and classifies into classes = number of y rows. """
   est = Multilayer_Logistic_Regressor([X.shape[0], X.shape[0], X.shape[0], y.shape[0]])
-  if save is not None:
+  if load is not None:
     est.load_theta(load)
   if train:
     assert y.any() is not None, "Please pass in a label matrix"

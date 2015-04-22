@@ -21,6 +21,7 @@ parser.add_option("--partition",dest="part"     ,type=str ,default=None ,help="D
 parser.add_option("--train"    ,dest="train"    ,default=False,action="store_true",help="Set this flag to train model.")
 parser.add_option("--predict"  ,dest="predict"  ,default=False,action="store_true",help="Set this flag use model.")
 parser.add_option("--print"    ,dest="pm"       ,default=False,action="store_true",help="Set this flag to print available models.")
+parser.add_option("--verbose"  ,dest="verbose"  ,default=False,action="store_true",help="Models be verbose during training.")
 parser.add_option("--num_iter" ,dest="num_iter" ,type=int ,default=100  ,help="Number of iterations when training estimator.")
 
 options, args = parser.parse_args()
@@ -78,7 +79,7 @@ for i in range(len(options.models)):
   if options.load:
     load = options.load[i]
   print "Running " + m + "."
-  guess = models[m](X, y, reg_lambda=0, train=options.train, predict=options.predict, num_iters=options.num_iter, save=save, load=load, verbose=False)
+  guess = models[m](X, y, reg_lambda=0, train=options.train, predict=options.predict, num_iters=options.num_iter, save=save, load=load, verbose=options.verbose)
   res = {'X': X, 'action': action, 'y_true': y, 'T1': T1vals, 'T2': T2vals, 'y_guess': guess}
   results[m] = res
   print "---------------------------------------------------------------------"
