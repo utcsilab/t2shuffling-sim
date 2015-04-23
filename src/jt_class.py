@@ -86,5 +86,5 @@ for i in range(len(options.models)):
   res = {'X': X, 'action': action, 'y_true': y, 'T1': T1vals, 'T2': T2vals, 'y_guess': est.get_prediction(X), 'estimator': est}
   results[m] = res
   if options.train:
-    print "Score on cross validation set: %f" % est.score(X_test, y_test)
+    print "Score on test set: %f" % est.score(X_test, y_test)
   print "---------------------------------------------------------------------"
