@@ -6,6 +6,7 @@ from __future__ import division
 
 import numpy   as np
 import sklearn as skl
+import sys
 
 
 norm = np.linalg.norm
@@ -76,7 +77,10 @@ class Multilayer_Regressor(Regressor, skl.base.RegressorMixin):
         self.theta_lst[j] -= (grad[j] + (lmbda/n) * self.theta_lst[j])
       c.append(self.score(X, y))
       if verbose:
-        print "Progress: %d / %d, Score: %f" % (i+1, num_iter, c[-1])
+        sys.stdout.write("\rProgress: %d%%, Score: %f" % ((i+1)/num_iter * 100, c[-1]))
+        sys.stdout.flush()
+    if verbose:
+      print ""
     return np.array(c, dtype=np.float64)
 
   def get_prediction(self, X):
@@ -144,7 +148,10 @@ class Multilayer_Logistic_Regressor(Regressor, skl.base.ClassifierMixin):
         self.theta_lst[j] -= (grad[j] + (lmbda/n) * self.theta_lst[j])
       c.append(self.score(X, y))
       if verbose:
-        print "Progress: %d / %d, Score: %f" % (i+1, num_iter, c[-1])
+        sys.stdout.write("\rProgress: %d%%, Score: %f" % ((i+1)/num_iter * 100, c[-1]))
+        sys.stdout.flush()
+    if verbose:
+      print ""
     return np.array(c, dtype=np.float64)
 
   def get_prediction(self, X, threshold=None):
@@ -198,7 +205,7 @@ if __name__ == '__main__':
   iris = datasets.load_iris()
   X_train, X_test, y_train, y_test = cv.train_test_split(iris.data, iris.target, test_size=0.2, random_state=0)
   mr = Multilayer_Regressor([X_train.shape[1], X_train.shape[1], X_train.shape[1], 1])
-  c = mr.train(X_train.T, y_train.T, num_iter=1000, verbose=False)
+  c = mr.train(X_train.T, y_train.T, num_iter=1000, verbose=True)
   print "Score on cross-validation set: %f" % mr.score(X_test.T, y_test.T)
 
   print "Multilayer Logistic Regressor"

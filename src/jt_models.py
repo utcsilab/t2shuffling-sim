@@ -16,10 +16,10 @@ def compute_alpha(X, U):
 
 jt_models_dict = {}
 
-def linear_regressor(X, y=None, reg_lambda=0, train=False, predict=True, num_iters=100, save=None, load=None, verbose=False):
+def linear_regressor(X, y=None, alpha=None, reg_lambda=0, train=False, predict=True, num_iters=100, save=None, load=None, verbose=False):
   """ A simple regressor that tries to find a linear transformation
       from signal to t1-t2 pair. """
-  est = Multilayer_Regressor([X.shape[0], 2])
+  est = Multilayer_Regressor([X.shape[0], y.shape[0]])
   if load is not None:
     est.load_theta(load)
   if train:
@@ -36,14 +36,36 @@ def linear_regressor(X, y=None, reg_lambda=0, train=False, predict=True, num_ite
 jt_models_dict["linear_regressor"] = linear_regressor
 
 
-def t2_nn_class(X, y=None, reg_lambda=0, train=False, predict=True, num_iters=100, save=None, load=None, verbose=False):
+def logistic_regressor(X, y=None, alpha=None, reg_lambda=0, train=False, predict=True, num_iters=100, save=None, load=None, verbose=False):
+  assert alpha is not None, "This model needs a gradient step paramter!"
+  X = X/np.max(X)
+  y = y/np.max(y)
+  est = Multilayer_Logistic_Regressor([X.shape[0], y.shape[0]])
+  if load is not None:
+    est.load_theta(load)
+  if train:
+    assert y.any() is not None, "Please pass in a label matrix"
+    est.train(X, y, alpha, num_iter=num_iters, lmbda=reg_lambda, verbose=verbose)
+    print "Test set performance: %f" % est.score(X, y)
+  if save is not None:
+    print "Saving estimator: " + save
+    est.save_theta(save)
+  if predict:
+    assert load or train, "No estimator passed in."
+  return est.get_prediction(X)
+
+jt_models_dict["logistic_regressor"] = logistic_regressor
+
+
+def t2_nn_class(X, y=None, alpha=None, reg_lambda=0, train=False, predict=True, num_iters=100, save=None, load=None, verbose=False):
   """ A neural network classifier that has 4 activation layers and classifies into classes = number of y rows. """
+  assert alpha is not None, "This model needs a gradient step paramter!"
   est = Multilayer_Logistic_Regressor([X.shape[0], X.shape[0], X.shape[0], y.shape[0]])
   if load is not None:
     est.load_theta(load)
   if train:
     assert y.any() is not None, "Please pass in a label matrix"
-    est.train(X, y, num_iter=num_iters, lmbda=reg_lambda, verbose=verbose)
+    est.train(X, y, alpha, num_iter=num_iters, lmbda=reg_lambda, verbose=verbose)
     print "Test set performance: %f" % est.score(X, y)
   if save is not None:
     print "Saving estimator: " + save
