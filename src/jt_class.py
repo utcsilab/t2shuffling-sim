@@ -3,10 +3,10 @@
 from __future__    import division
 from optparse      import OptionParser
 from os            import system
-from regressors    import Multilayer_Regressor as mr
+from sys           import argv
+from sklearn       import cross_validation     as cv
 from jt_models     import jt_models_dict       as models
 from jt_partitions import jt_partitions_dict   as partitions
-from sys           import argv
 
 import numpy    as np
 import scipy.io as sio
@@ -57,6 +57,8 @@ if options.train:
   T1vals = np.squeeze(dct["T1vals"])
   T2vals = np.squeeze(dct["T2vals"])
   y      = partitions[options.part](T1vals, T2vals)
+  X, X_test, y, y_test = cv.train_test_split(X.T, y.T, test_size=0.4, random_state=0)
+  X, X_test, y, y_test = X.T, X_test.T, y.T, y_test.T
   action = 'train'
 else:
   T1vals = None
@@ -80,7 +82,9 @@ for i in range(len(options.models)):
   if options.load:
     load = options.load[i]
   print "Running " + m + "."
-  guess = models[m](X, y, alpha=options.alpha, reg_lambda=0, train=options.train, predict=options.predict, num_iters=options.num_iter, save=save, load=load, verbose=options.verbose)
-  res = {'X': X, 'action': action, 'y_true': y, 'T1': T1vals, 'T2': T2vals, 'y_guess': guess}
+  est = models[m](X, y, alpha=options.alpha, reg_lambda=0, train=options.train, predict=options.predict, num_iters=options.num_iter, save=save, load=load, verbose=options.verbose)
+  res = {'X': X, 'action': action, 'y_true': y, 'T1': T1vals, 'T2': T2vals, 'y_guess': est.get_prediction(X), 'estimator': est}
   results[m] = res
+  if options.train:
+    print "Score on cross validation set: %f" % est.score(X_test, y_test)
   print "---------------------------------------------------------------------"

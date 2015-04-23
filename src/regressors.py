@@ -57,15 +57,13 @@ class Multilayer_Regressor(Regressor, skl.base.RegressorMixin):
 
   def load_theta(self, theta_path):
     """ This assumes that theta list is saved as an npy file """
-    theta_lst = np.load(theta_path)
-    for i in range(len(theta_lst)):
-      self.theta_lst[i] = theta_lst[i]
+    self.theta_lst = np.load(theta_path)
 
   def save_theta(self, path):
     """ This saves the theta_lst as an npy """
     np.save(path, np.array(self.theta_lst)) 
 
-  def train(self, X, y, num_iter=100, lmbda=0, verbose=False):
+  def train(self, X, y, alpha=None, num_iter=100, lmbda=0, verbose=False):
     c = [self.score(X, y)]
     m, n = X.shape
     if verbose:
@@ -128,9 +126,7 @@ class Multilayer_Logistic_Regressor(Regressor, skl.base.ClassifierMixin):
 
   def load_theta(self, theta_path):
     """ This assumes that theta list is saved as an npy file """
-    theta_lst = np.load(theta_path)
-    for i in range(len(theta_lst)):
-      self.theta_lst[i] = theta_lst[i]
+    self.theta_lst = np.load(theta_path)
 
   def save_theta(self, path):
     """ This saves the theta_lst as an npy """
