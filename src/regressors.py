@@ -20,6 +20,12 @@ def sigmoid_gradient(x):
   return np.multiply(g, 1 - g)
 
 
+def sigmoid_double_gradient(x):
+  h = sigmoid(x)
+  g = sigmoid_gradient(x)
+  return g * (1 - 2 * h)
+
+
 class Regressor():
   """ This is an interface regressors. """
   def __init__(self):
@@ -83,22 +89,22 @@ class Multilayer_Regressor(Regressor, skl.base.RegressorMixin):
     return activation_layers
 
   def theta_gradients(self, X, y):
-    activation_layers = self.get_activation_layers(X)
-    delta = - (y - activation_layers[-1]);
-    activation_layers.pop()
+    act = self.get_activation_layers(X)
+    delta = - (y - act.pop());
     grad = []
     past_theta = None
+    alpha = None
     for theta in self.theta_lst[::-1]:
+      a = act.pop()
       if past_theta is None:
-        alpha = 0.9 * (1/(norm(activation_layers[-1], ord=2)**2))
-        g = alpha * np.dot(delta, activation_layers[-1].conj().T)
+        alpha = 1/norm(a, ord=2)**2
         past_theta = theta
       else:
-        alpha = 0.9 * (1/(norm(past_theta.conj(), ord=2) * norm(activation_layers[-1], ord=2))**2)
-        g = alpha * np.dot(past_theta.conj().T, np.dot(delta, activation_layers[-1].conj().T))
-        past_theta = np.dot(past_theta, theta)
-      activation_layers.pop()
-      grad.insert(0, g)
+        delta = np.dot(past_theta.T, delta)
+        alpha = alpha * 1/norm(past_theta, ord=2)**2
+      g = np.dot(delta, a.T)
+      past_theta = theta
+      grad.insert(0, 0.9 * alpha * g)
     return grad
 
   def score(self, X, y, sample_weigth=None):
@@ -126,13 +132,13 @@ class Multilayer_Logistic_Regressor(Regressor, skl.base.ClassifierMixin):
     """ This saves the theta_lst as an npy """
     np.save(path, np.array(self.theta_lst))
 
-  def train(self, X, y, num_iter=100, lmbda=0, verbose=False):
+  def train(self, X, y, alpha, num_iter=100, lmbda=0, verbose=False):
     c = [self.score(X, y)]
     m, n = X.shape
     if verbose:
       print "Init score: %f" % c[-1]
     for i in range(num_iter):
-      grad = self.theta_gradients(X, y)
+      grad = self.theta_gradients(X, y, alpha)
       k = len(self.theta_lst)
       for j in range(k):
         self.theta_lst[j] -= (grad[j] + (lmbda/n) * self.theta_lst[j])
@@ -141,42 +147,39 @@ class Multilayer_Logistic_Regressor(Regressor, skl.base.ClassifierMixin):
         print "Progress: %d / %d, Score: %f" % (i+1, num_iter, c[-1])
     return np.array(c, dtype=np.float64)
 
-
   def get_prediction(self, X, threshold=None):
-    z_layers, activation_layers = self.get_az_layers(X)
+    _, _, activation_layers = self.get_layers(X)
     if threshold is None:
       return activation_layers[-1]
     return activation_layers[-1].all() > threshold
 
-  def get_az_layers(self, X):
+  def get_layers(self, X):
     activation_layers = [X]
-    z_layers=[]
+    zgrad  = []
+    zgrad2 = []
     for theta in self.theta_lst:
-      layer = theta.dot(activation_layers[-1])
-      z_layers.append(layer)
-      activation_layers.append(sigmoid(layer))
-    return z_layers, activation_layers
+      z = theta.dot(activation_layers[-1])
+      zgrad.append(sigmoid_gradient(z))
+      zgrad2.append(sigmoid_double_gradient(z))
+      activation_layers.append(sigmoid(z))
+    return zgrad, zgrad2, activation_layers
 
-  def theta_gradients(self, X, y):
-    z_layers, activation_layers = self.get_az_layers(X)
-    delta = - (y - activation_layers.pop());
+  def theta_gradients(self, X, y, alpha):
+    zgrad, zgrad2, act = self.get_layers(X)
     grad = []
+    delta = -(y - act.pop())
     past_theta = None
-    sig_grad = np.ones((y.shape[0], y.shape[0]))
     for theta in self.theta_lst[::-1]:
-      a = activation_layers.pop()
-      sig_grad = sigmoid_gradient(z_layers.pop())
-      if past_theta is None:
-        alpha = 0.9 * (1/(norm(a, ord=2)**2))
-        g = alpha * np.dot(delta * sig_grad, a.conj().T)
-        past_theta = theta
+      a = act.pop(); zg = zgrad.pop();
+      if past_theta == None:
+        delta = delta * zg
       else:
-        alpha = 0.9 * (1/norm(a, ord=2)**2)
-# TODO: Figure out how past sig_grads can be used. don't throw away that information.
-        t = np.dot(past_theta.conj().T, delta) * sig_grad
-        g = alpha * np.dot(t, a.conj().T)
-        past_theta = np.dot(past_theta, theta)
-      grad.insert(0, g)
+        delta = np.dot(past_theta.T, delta) * zg
+      g = np.dot(delta, a.T)
+# TODO: Derive a way of finding alpha. It seems to get really complicated.
+#      alpha = 0.9 * (1/(norm(theta, ord=2)**2 * norm(delta, ord=2)**2 * norm(a, ord=2)**2))
+      past_theta = theta
+      grad.insert(0, alpha * g)
     return grad
 
   def score(self, X, y, sample_weigth=None):
@@ -193,9 +196,9 @@ if __name__ == '__main__':
 
   print "Multilayer Regressor"
   iris = datasets.load_iris()
-  X_train, X_test, y_train, y_test = cv.train_test_split(iris.data, iris.target, test_size=0.4, random_state=0)
+  X_train, X_test, y_train, y_test = cv.train_test_split(iris.data, iris.target, test_size=0.2, random_state=0)
   mr = Multilayer_Regressor([X_train.shape[1], X_train.shape[1], X_train.shape[1], 1])
-  c = mr.train(X_train.T, y_train.T)
+  c = mr.train(X_train.T, y_train.T, num_iter=1000, verbose=False)
   print "Score on cross-validation set: %f" % mr.score(X_test.T, y_test.T)
 
   print "Multilayer Logistic Regressor"
@@ -204,9 +207,9 @@ if __name__ == '__main__':
   for idx in range(target.shape[1]):
     target[digits.target[idx], idx] = 1
   
-  X_train, X_test, y_train, y_test = cv.train_test_split(digits.data, target.T, test_size=0.4, random_state=0)
+  X_train, X_test, y_train, y_test = cv.train_test_split(digits.data, target.T, test_size=0.2, random_state=0)
   X_train, X_test, y_train, y_test = X_train.T, X_test.T, y_train.T, y_test.T
-  nn = Multilayer_Logistic_Regressor([X_train.shape[0], X_train.shape[0], X_train.shape[0], 10])
+  nn = Multilayer_Logistic_Regressor([X_train.shape[0], X_train.shape[0]*2, 10])
   #nn = Multilayer_Logistic_Regressor([X_train.shape[0], 10])
-  c = nn.train(X_train, y_train, num_iter=100, verbose=True)
+  c = nn.train(X_train, y_train, num_iter=100, verbose=True, alpha=1e-4)
   print "Score on cross-validation set: %f" % nn.score(X_test, y_test)
