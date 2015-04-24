@@ -304,7 +304,6 @@ def reg_svd_sq(X, k=None, rvc=None):
 
 models_dict["reg_svd_sq"] = reg_svd_sq
 
-def TE_svd(X, k=None, rvc=None):
-  return None
+
 
 models_dict["TE_svd"] = TE_svd
