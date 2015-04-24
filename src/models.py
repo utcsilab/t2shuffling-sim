@@ -304,6 +304,29 @@ def reg_svd_sq(X, k=None, rvc=None):
 
 models_dict["reg_svd_sq"] = reg_svd_sq
 
+def low_TE_nn(X, k=None, rvc=None):
+  if k is None:
+    k = 3
+  U = svd(X)
+  nn = mr([0, 0, 0])
+  nn.theta_lst[0] = inv(U)[:k, :]
+  nn.theta_lst[1] = U[:, :k]
+
+  feature_select = np.linspace(0, 1, X.shape[0])[::-1]**1e10
+
+  c = nn.train(X, X, feature_selection=feature_select, num_iter=5000, verbose=True)
+  U = rvc_U(nn.theta_lst[-1], rvc)
+  alpha = compute_alpha(X, U, rvc)
+  return U, alpha, np.dot(U[:, :k], alpha[:k])
+
+models_dict["low_TE_nn"] = low_TE_nn
 
 
+def TE_svd(X, k=None, rvc=None):
+  fs = np.diag(np.linspace(0, 1, X.shape[0])[::-1]**1e10)
+  Xt = np.dot(fs, X)
+  U = rvc_U(svd(Xt), rvc)
+  alpha = compute_alpha(X, U, rvc)
+  return U, alpha, np.dot(U[:, :k], alpha[:k])
+  
 models_dict["TE_svd"] = TE_svd

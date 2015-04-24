@@ -63,13 +63,15 @@ class Multilayer_Regressor(Regressor, skl.base.RegressorMixin):
     """ This saves the theta_lst as an npy """
     np.save(path, np.array(self.theta_lst)) 
 
-  def train(self, X, y, alpha=None, num_iter=100, lmbda=0, verbose=False):
+  def train(self, X, y, alpha=None, num_iter=100, lmbda=0, feature_selection=None, verbose=False):
     c = [self.score(X, y)]
     m, n = X.shape
+    if type(feature_selection) is type(None):
+      assert len(feature_selection) == y.shape[0]
     if verbose:
       print "Init score: %f" % c[-1]
     for i in range(num_iter):
-      grad = self.theta_gradients(X, y)
+      grad = self.theta_gradients(X, y, feature_selection)
       k = len(self.theta_lst)
       for j in range(k):
         self.theta_lst[j] -= (grad[j] + (lmbda/n) * self.theta_lst[j])
@@ -90,12 +92,15 @@ class Multilayer_Regressor(Regressor, skl.base.RegressorMixin):
       activation_layers.append(np.dot(theta, activation_layers[-1]))
     return activation_layers
 
-  def theta_gradients(self, X, y):
+  def theta_gradients(self, X, y, feature_selection):
     act = self.get_activation_layers(X)
     delta = - (y - act.pop());
+    alpha = None
+    if type(feature_selection) is not type(None):
+      #alpha = 1/norm(feature_selection, ord=2)**2
+      delta = np.dot(np.diag(feature_selection), delta) 
     grad = []
     past_theta = None
-    alpha = None
     for theta in self.theta_lst[::-1]:
       a = act.pop()
       if past_theta is None:
@@ -132,7 +137,7 @@ class Multilayer_Logistic_Regressor(Regressor, skl.base.ClassifierMixin):
     """ This saves the theta_lst as an npy """
     np.save(path, np.array(self.theta_lst))
 
-  def train(self, X, y, alpha, num_iter=100, lmbda=0, verbose=False):
+  def train(self, X, y, alpha, num_iter=100, lmbda=0, feature_selection=None, verbose=False):
     c = [self.score(X, y)]
     m, n = X.shape
     if verbose:
