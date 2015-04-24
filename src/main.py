@@ -175,10 +175,10 @@ for m in lst:
   k = options.k
   U, alpha, X_hat = model(X, options.k, rvc)
   print "Results:"
-  pnorm, fro_perc_err = get_metric(X, X_hat)
+  signal_perc_err, TE_perc_err, fro_perc_err = get_metric(X, X_hat)
   if not k:
     k = U.shape[1]
-  results[m] = {'U':U, 'alpha':alpha, 'k':k, 'X_hat': X_hat, 'Percentage Error per Signal': pnorm, 'Frobenius Percentage Error': fro_perc_err}
+  results[m] = {'U':U, 'alpha':alpha, 'k':k, 'X_hat': X_hat, 'Percentage Error per Signal': signal_perc_err, 'Percentage Error per TE': TE_perc_err, 'Frobenius Percentage Error': fro_perc_err}
 print "------------------------------------------------------------"
 
 

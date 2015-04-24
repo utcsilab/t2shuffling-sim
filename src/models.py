@@ -174,6 +174,8 @@ def batch_nn(X, k=None, rvc=None):
         alpha - the "jump" of the descent
         lambda - the regularization paramter. """
   from metrics import get_metric
+  if k is None:
+    k = 4
   nn = mr([X.shape[0], k, X.shape[0]])
 
   nn.load_theta('../saves/batch_nn1_sim_theta.npy')
@@ -299,4 +301,10 @@ def reg_svd_sq(X, k=None, rvc=None):
   alpha = compute_alpha(X, U, rvc)
   return U, alpha, np.dot(U[:, :k], alpha[:k])
 
+
 models_dict["reg_svd_sq"] = reg_svd_sq
+
+def TE_svd(X, k=None, rvc=None):
+  return None
+
+models_dict["TE_svd"] = TE_svd

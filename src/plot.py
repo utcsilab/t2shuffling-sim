@@ -46,7 +46,7 @@ def mksv_plot(ax, data, title, xlabel, ylabel, xstart=0, ylim=None, other_label=
 
 def plot_simulation(U, k, X, X_hat, model_name, T1vals, T2vals, e2s, path):
   span = T1vals.size
-  pnorm, fro_perc_err = get_metric(X, X_hat, disp=False)
+  pnorm, tnorm, fro_perc_err = get_metric(X, X_hat, disp=False)
   fig = plt.figure(figsize=img_size)
   half = int(np.floor(span/2))
   ax1 = plt.subplot2grid((4, span), (0,0), colspan=half)
@@ -62,7 +62,8 @@ def plot_simulation(U, k, X, X_hat, model_name, T1vals, T2vals, e2s, path):
   fig.tight_layout()
   plt.subplots_adjust(top=0.925, bottom=0.1)
   fig.text(0.1115, 0.025, "Total Percentage Error: " + str(fro_perc_err) + \
-    "%\nMax Percentage Error for any single signal: " + str(max(pnorm)) + "%", bbox={'alpha':0.5, 'pad':10}, fontsize=20)
+    "\nMax Percentage Error for any single signal: " + str(max(pnorm)) + "%" + \
+    "\nLowest Percentage Error at any TE: " + str(min(tnorm)), bbox={'alpha':0.5, 'pad':10}, fontsize=20)
   fig.text(0.1115, 1 - 0.025, "Model: " + model_name, fontsize=20, bbox={'alpha':0.5, 'pad':10})
   fig.savefig(path + model_name + '.png')
 
