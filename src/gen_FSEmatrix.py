@@ -21,6 +21,6 @@ def gen_FSEmatrix(N, angles_rad, ETL, e2s, TE, T1vals, T2vals):
       X[:, c] = FSE_signal(angles_rad, TE, T1, T2)[:,0]
       c = c + 1
 
-  keep = range(1 + e2s, e2s + ETL + 1)
+  keep = range(e2s, e2s + ETL)
   X = X[keep, :]
   return X
