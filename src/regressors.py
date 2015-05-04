@@ -66,7 +66,7 @@ class Multilayer_Regressor(Regressor, skl.base.RegressorMixin):
   def train(self, X, y, alpha=None, num_iter=100, lmbda=0, feature_selection=None, verbose=False):
     c = [self.score(X, y)]
     m, n = X.shape
-    if type(feature_selection) is type(None):
+    if type(feature_selection) is not type(None):
       assert len(feature_selection) == y.shape[0]
     if verbose:
       print "Init score: %f" % c[-1]

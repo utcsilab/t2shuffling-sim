@@ -3,6 +3,7 @@ from scipy.optimize import fmin
 from regressors import Multilayer_Regressor as mr
 
 import numpy as np
+import sys
 
 
 norm = np.linalg.norm
@@ -218,7 +219,7 @@ def batch_nn_svd(X, k=None, rvc=None):
   nn.theta_lst[0] = inv(U)[:k, :]
   nn.theta_lst[1] = U[:, :k]
 
-  width = np.floor(X.shape[1]/64) # Bigger the value, smaller the gobal error. Smaller the value, smaller the individual error.
+  width = np.floor(X.shape[1]/128) # Bigger the value, smaller the gobal error. Smaller the value, smaller the individual error.
   #width = 8 # Bigger the value, smaller the gobal error. Smaller the value, smaller the individual error.
   global_iter = 64
   nn_iter = 100
@@ -226,14 +227,15 @@ def batch_nn_svd(X, k=None, rvc=None):
   U = rvc_U(nn.theta_lst[-1], rvc)
   alpha = compute_alpha(X, U, rvc)
 
-  past_perc, past_fro = get_metric(X, np.dot(U, alpha), disp=False)
+  past_perc, TEerr, past_fro = get_metric(X, np.dot(U, alpha), disp=False)
   past_perc = np.max(past_perc)
 
   for i in range(global_iter):
 
-    print "Progress: %d / %d" % (i+1, global_iter)
+    sys.stdout.write("\rProgress: %d%%" % ((i+1)/global_iter * 100))
+    sys.stdout.flush()
 
-    perc, fro = get_metric(X, np.dot(U, alpha), disp=False)
+    perc, TEerr, fro = get_metric(X, np.dot(U, alpha), disp=False)
 
     idx = np.argmax(perc, axis=0)
     if (idx < width):
@@ -248,6 +250,8 @@ def batch_nn_svd(X, k=None, rvc=None):
     alpha = compute_alpha(X, U, rvc)
 
     past_perc, past_fro = np.max(perc), fro
+
+  print ""
 
   return U, alpha, np.dot(U[:, :k], alpha[:k])
   
@@ -312,7 +316,7 @@ def low_TE_nn(X, k=None, rvc=None):
   nn.theta_lst[0] = inv(U)[:k, :]
   nn.theta_lst[1] = U[:, :k]
 
-  feature_select = np.linspace(0, 1, X.shape[0])[::-1]**1e10
+  feature_select = np.linspace(0.1, 1, X.shape[0])[::-1]**1e2
 
   c = nn.train(X, X, feature_selection=feature_select, num_iter=5000, verbose=True)
   U = rvc_U(nn.theta_lst[-1], rvc)
@@ -323,7 +327,7 @@ models_dict["low_TE_nn"] = low_TE_nn
 
 
 def TE_svd(X, k=None, rvc=None):
-  fs = np.diag(np.linspace(0, 1, X.shape[0])[::-1]**1e10)
+  fs = np.diag(np.linspace(0.90, 0.99, X.shape[0])[::-1])
   Xt = np.dot(fs, X)
   U = rvc_U(svd(Xt), rvc)
   alpha = compute_alpha(X, U, rvc)

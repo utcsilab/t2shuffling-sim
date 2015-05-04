@@ -27,7 +27,8 @@ parser.add_option("--alpha"    ,dest="alpha"    ,type=float ,default=None ,help=
 
 options, args = parser.parse_args()
 
-# TODO  Divide training so that it uses a cross validation set and a test set so as to check recall.
+# TODO  Divide training so that it uses a cross validation set and a test set so as to check poisition and recall.
+# TODO: Implement f score.
 
 if len(argv) == 1:
   parser.print_help()

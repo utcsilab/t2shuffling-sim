@@ -69,7 +69,7 @@ def t2_nn_class(X, y=None, alpha=None, reg_lambda=0, train=False, predict=True, 
     est.load_theta(load)
   else:
     assert y.any() is not None, "Please pass in a label matrix"
-    est = Multilayer_Logistic_Regressor([X.shape[0], X.shape[0], X.shape[0], y.shape[0]])
+    est = Multilayer_Logistic_Regressor([X.shape[0], X.shape[0], y.shape[0]])
   if train:
     est.train(X, y, alpha, num_iter=num_iters, lmbda=reg_lambda, verbose=verbose)
     print "Test set performance: %f" % est.score(X, y)
@@ -81,4 +81,3 @@ def t2_nn_class(X, y=None, alpha=None, reg_lambda=0, train=False, predict=True, 
   return est
 
 jt_models_dict["t2_nn_class"] = t2_nn_class
-

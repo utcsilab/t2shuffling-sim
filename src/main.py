@@ -133,8 +133,8 @@ elif options.genFSE:
     ETL = T - e2s - 1
   else:
     ETL = options.ETL
-  T1vals = np.ravel(T1vals)
-  T2vals = np.ravel(T2vals)
+  T1vals = np.sort(np.ravel(T1vals))
+  T2vals = np.sort(np.ravel(T2vals))
   X = gen_FSEmatrix(N, angles, ETL, e2s, TE, T1vals, T2vals)
   if options.saveFSE != None:
     print "Saving as " + options.saveFSE + time_stamp

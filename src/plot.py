@@ -58,12 +58,12 @@ def plot_simulation(U, k, X, X_hat, model_name, T1vals, T2vals, e2s, path):
   mksv_plot(ax2, X_hat/np.max(X_hat), 'Recovered Signals', 'TE number', 'Signal', xstart=e2s, ylim=[0, 1])
   mksv_plot(ax3, abs(X-X_hat), 'Difference', 'TE number', 'Diff', xstart=e2s)
   mksv_plot(ax4, -U[:, :k], 'Basis', 'TE number', 'Signal', xstart=e2s)
-  mksv_plot(ax5, (T2vals * 1000, T1vals * 1000, pnorm), 'T2_Error', 'T2_vals (ms)', 'Percentage Error', other_label="T1 (in ms): ", ylim=[0,10])
+  mksv_plot(ax5, (T2vals * 1000, T1vals * 1000, pnorm), 'T2_Error', 'T2_vals (ms)', 'Percentage Error', other_label="T1 (in ms): ", ylim=[0,12])
   fig.tight_layout()
   plt.subplots_adjust(top=0.925, bottom=0.1)
   fig.text(0.1115, 0.025, "Total Percentage Error: " + str(fro_perc_err) + \
-    "\nMax Percentage Error for any single signal: " + str(max(pnorm)) + "%" + \
-    "\nLowest Percentage Error at any TE: " + str(min(tnorm)), bbox={'alpha':0.5, 'pad':10}, fontsize=20)
+    "\nMax Percentage Error for any single signal: " + str(max(pnorm)) + "%." + \
+    "Lowest Percentage Error at any TE: " + str(min(tnorm)), bbox={'alpha':0.5, 'pad':10}, fontsize=20)
   fig.text(0.1115, 1 - 0.025, "Model: " + model_name, fontsize=20, bbox={'alpha':0.5, 'pad':10})
   fig.savefig(path + model_name + '.png')
 
@@ -84,7 +84,7 @@ def plot_cfl_signals(U, k, X, X_hat, model_name, e2s, path):
 
   n_idx = np.argsort(np.linalg.norm(X, ord=1, axis=0))
   diff  = np.matrix(pnorm[n_idx]).T
-  mksv_plot(ax5, diff, "Percentage error - Increasing norm", "TE Number", "Perc Error", xstart=e2s, ylim=[0, 25])
+  mksv_plot(ax5, diff, "Percentage error - Increasing norm", "TE Number", "Perc Error", xstart=e2s, ylim=[0, 20])
 
   fig.tight_layout()
   plt.subplots_adjust(top=0.925, bottom=0.1)
