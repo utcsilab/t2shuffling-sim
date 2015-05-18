@@ -2,8 +2,10 @@ from __future__ import division
 from scipy.optimize import fmin
 from regressors import Multilayer_Regressor as mr
 
+
 import numpy as np
 import sys
+import theanets
 
 
 norm = np.linalg.norm
@@ -18,7 +20,7 @@ def svd(X):
 
 def compute_alpha(X, U, rvc=None):
   if rvc is None:
-    return np.dot(np.dot(inv(np.dot(U.H,  U)), U.H), X)
+    return np.dot(np.dot(inv(np.dot(U.conj().T,  U)), U.conj().T), X)
   else:
     return np.dot(np.dot(inv(np.dot(U.T, U)), U.T), X)
 
@@ -334,3 +336,15 @@ def TE_svd(X, k=None, rvc=None):
   return U, alpha, np.dot(U[:, :k], alpha[:k])
   
 models_dict["TE_svd"] = TE_svd
+
+
+def autoencoder(X, k=None, rvc=None):
+  if k == None:
+    k = 4
+  exp = theanets.Experiment(theanets.Autoencoder, layers=(X.shape[0], k, X.shape[0]))
+  exp.train(train_set=X.T.astype(np.float64))
+  alpha = rvc_U(exp.network.encode(X.T.astype(np.float64)), rvc).T
+  U = compute_alpha(X.T, alpha.T, rvc).T
+  return U, alpha, np.dot(U[:, :k], alpha[:k])
+
+models_dict["autoencoder"] = autoencoder
