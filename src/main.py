@@ -149,8 +149,8 @@ else:
   ETL = dct["ETL"]
   e2s = dct["e2s"]
   TE = dct["TE"]
-  T1vals = dct["T1vals"]
-  T2vals = dct["T2vals"]
+  T1vals = np.sort(np.ravel(dct["T1vals"]))
+  T2vals = np.sort(np.ravel(dct["T2vals"]))
 
 
 if rvc == 'real':
