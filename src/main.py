@@ -11,6 +11,7 @@ from plot                 import plot_simulation, plot_cfl_signals
 from gen_FSEmatrix        import gen_FSEmatrix
 from sys                  import argv, exit
 from warnings             import warn
+import os.path
 
 
 import numpy as np
@@ -212,8 +213,6 @@ if options.save_basis != None:
     if options.basis_name != None:
       cfl_name = options.basis_name  
     else:
-      warn('FIXME: cfl_name')
-      cfl_name = 'FIXME'
+      cfl_name = 'bas.' + m + k_ext + timestamp
 
-    warn('FIXME: use os.path')
-    writecfl(options.save_basis + cfl_name + "_" + m + k_ext + time_stamp, U)
+    writecfl(os.path.join(options.save_basis, cfl_name), U)
