@@ -1,5 +1,16 @@
 #!/usr/bin/env python
 
+###def parse_dict(fname):
+    ###d = {}
+    ###with open(fname) as f:
+        ###d = dict([line.split() for line in f])
+    ###return d
+###t2s_params = parse_dict(t2shuffling_params_fname)
+###echoes2skip = int(t2s_params['echoes2skip'])
+###opetl = int(t2s_params['opetl'])
+###num_echoes = opetl - echoes2skip
+###flip_lope = int(t2s_params['flip_lope'])
+
 
 from __future__           import division
 from optparse             import OptionParser
