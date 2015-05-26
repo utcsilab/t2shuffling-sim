@@ -1,0 +1,200 @@
+lope_echo1=15  lope_min=4  lope_max=150  etl=198  esp=4048 
+flip_first=120.0  flip_min=30.0  flip_lope=30.0  flip_last=120.0  flip_max=120.0
+  i=  0  flip=120.00  s_target=0.7500  s_actual=0.7500 
+  i=  1  flip= 64.30  s_target=0.6025  s_actual=0.6025 
+  i=  2  flip= 45.86  s_target=0.5288  s_actual=0.5288 
+  i=  3  flip= 38.08  s_target=0.4919  s_actual=0.4919 
+  i=  4  flip= 34.26  s_target=0.4735  s_actual=0.4735 
+  i=  5  flip= 32.22  s_target=0.4643  s_actual=0.4643 
+  i=  6  flip= 31.11  s_target=0.4598  s_actual=0.4598 
+  i=  7  flip= 30.52  s_target=0.4575  s_actual=0.4575 
+  i=  8  flip= 30.24  s_target=0.4564  s_actual=0.4565 
+  i=  9  flip= 30.15  s_target=0.4560  s_actual=0.4559 
+  i= 10  flip= 30.18  s_target=0.4558  s_actual=0.4557 
+  i= 11  flip= 30.02  s_target=0.4557  s_actual=0.4533 
+  i= 12  flip= 30.38  s_target=0.4558  s_actual=0.4558 
+  i= 13  flip= 30.40  s_target=0.4558  s_actual=0.4559 
+  i= 14  flip= 30.45  s_target=0.4559  s_actual=0.4562 
+  i= 15  flip= 30.54  s_target=0.4573  s_actual=0.4573 
+  i= 16  flip= 30.69  s_target=0.4592  s_actual=0.4592 
+  i= 17  flip= 30.85  s_target=0.4615  s_actual=0.4615 
+  i= 18  flip= 31.04  s_target=0.4640  s_actual=0.4639 
+  i= 19  flip= 31.25  s_target=0.4665  s_actual=0.4665 
+  i= 20  flip= 31.50  s_target=0.4690  s_actual=0.4690 
+  i= 21  flip= 31.78  s_target=0.4716  s_actual=0.4716 
+  i= 22  flip= 32.08  s_target=0.4741  s_actual=0.4741 
+  i= 23  flip= 32.40  s_target=0.4767  s_actual=0.4767 
+  i= 24  flip= 32.71  s_target=0.4793  s_actual=0.4793 
+  i= 25  flip= 33.01  s_target=0.4819  s_actual=0.4819 
+  i= 26  flip= 33.30  s_target=0.4845  s_actual=0.4845 
+  i= 27  flip= 33.57  s_target=0.4871  s_actual=0.4871 
+  i= 28  flip= 33.83  s_target=0.4896  s_actual=0.4896 
+  i= 29  flip= 34.10  s_target=0.4922  s_actual=0.4922 
+  i= 30  flip= 34.37  s_target=0.4948  s_actual=0.4948 
+  i= 31  flip= 34.65  s_target=0.4974  s_actual=0.4974 
+  i= 32  flip= 34.95  s_target=0.5000  s_actual=0.5000 
+  i= 33  flip= 35.26  s_target=0.5026  s_actual=0.5026 
+  i= 34  flip= 35.58  s_target=0.5052  s_actual=0.5052 
+  i= 35  flip= 35.89  s_target=0.5077  s_actual=0.5077 
+  i= 36  flip= 36.19  s_target=0.5103  s_actual=0.5103 
+  i= 37  flip= 36.49  s_target=0.5129  s_actual=0.5129 
+  i= 38  flip= 36.78  s_target=0.5155  s_actual=0.5155 
+  i= 39  flip= 37.06  s_target=0.5181  s_actual=0.5181 
+  i= 40  flip= 37.35  s_target=0.5207  s_actual=0.5207 
+  i= 41  flip= 37.66  s_target=0.5233  s_actual=0.5233 
+  i= 42  flip= 37.97  s_target=0.5258  s_actual=0.5258 
+  i= 43  flip= 38.29  s_target=0.5284  s_actual=0.5284 
+  i= 44  flip= 38.62  s_target=0.5310  s_actual=0.5310 
+  i= 45  flip= 38.94  s_target=0.5336  s_actual=0.5336 
+  i= 46  flip= 39.25  s_target=0.5362  s_actual=0.5362 
+  i= 47  flip= 39.56  s_target=0.5388  s_actual=0.5388 
+  i= 48  flip= 39.86  s_target=0.5413  s_actual=0.5413 
+  i= 49  flip= 40.17  s_target=0.5439  s_actual=0.5439 
+  i= 50  flip= 40.49  s_target=0.5465  s_actual=0.5465 
+  i= 51  flip= 40.81  s_target=0.5491  s_actual=0.5491 
+  i= 52  flip= 41.15  s_target=0.5517  s_actual=0.5517 
+  i= 53  flip= 41.48  s_target=0.5543  s_actual=0.5543 
+  i= 54  flip= 41.82  s_target=0.5569  s_actual=0.5569 
+  i= 55  flip= 42.14  s_target=0.5594  s_actual=0.5594 
+  i= 56  flip= 42.47  s_target=0.5620  s_actual=0.5620 
+  i= 57  flip= 42.79  s_target=0.5646  s_actual=0.5646 
+  i= 58  flip= 43.12  s_target=0.5672  s_actual=0.5672 
+  i= 59  flip= 43.45  s_target=0.5698  s_actual=0.5698 
+  i= 60  flip= 43.79  s_target=0.5724  s_actual=0.5724 
+  i= 61  flip= 44.14  s_target=0.5750  s_actual=0.5750 
+  i= 62  flip= 44.49  s_target=0.5775  s_actual=0.5775 
+  i= 63  flip= 44.84  s_target=0.5801  s_actual=0.5801 
+  i= 64  flip= 45.18  s_target=0.5827  s_actual=0.5827 
+  i= 65  flip= 45.51  s_target=0.5853  s_actual=0.5853 
+  i= 66  flip= 45.85  s_target=0.5879  s_actual=0.5879 
+  i= 67  flip= 46.20  s_target=0.5905  s_actual=0.5905 
+  i= 68  flip= 46.56  s_target=0.5930  s_actual=0.5931 
+  i= 69  flip= 46.92  s_target=0.5956  s_actual=0.5956 
+  i= 70  flip= 47.28  s_target=0.5982  s_actual=0.5982 
+  i= 71  flip= 47.64  s_target=0.6008  s_actual=0.6008 
+  i= 72  flip= 48.00  s_target=0.6034  s_actual=0.6034 
+  i= 73  flip= 48.35  s_target=0.6060  s_actual=0.6060 
+  i= 74  flip= 48.71  s_target=0.6086  s_actual=0.6086 
+  i= 75  flip= 49.08  s_target=0.6111  s_actual=0.6111 
+  i= 76  flip= 49.45  s_target=0.6137  s_actual=0.6137 
+  i= 77  flip= 49.83  s_target=0.6163  s_actual=0.6163 
+  i= 78  flip= 50.20  s_target=0.6189  s_actual=0.6189 
+  i= 79  flip= 50.58  s_target=0.6215  s_actual=0.6215 
+  i= 80  flip= 50.95  s_target=0.6241  s_actual=0.6241 
+  i= 81  flip= 51.32  s_target=0.6267  s_actual=0.6266 
+  i= 82  flip= 51.70  s_target=0.6292  s_actual=0.6292 
+  i= 83  flip= 52.09  s_target=0.6318  s_actual=0.6318 
+  i= 84  flip= 52.48  s_target=0.6344  s_actual=0.6344 
+  i= 85  flip= 52.87  s_target=0.6370  s_actual=0.6370 
+  i= 86  flip= 53.25  s_target=0.6396  s_actual=0.6396 
+  i= 87  flip= 53.64  s_target=0.6422  s_actual=0.6422 
+  i= 88  flip= 54.03  s_target=0.6447  s_actual=0.6448 
+  i= 89  flip= 54.42  s_target=0.6473  s_actual=0.6473 
+  i= 90  flip= 54.83  s_target=0.6499  s_actual=0.6499 
+  i= 91  flip= 55.23  s_target=0.6525  s_actual=0.6525 
+  i= 92  flip= 55.64  s_target=0.6551  s_actual=0.6551 
+  i= 93  flip= 56.04  s_target=0.6577  s_actual=0.6577 
+  i= 94  flip= 56.44  s_target=0.6603  s_actual=0.6603 
+  i= 95  flip= 56.85  s_target=0.6628  s_actual=0.6628 
+  i= 96  flip= 57.27  s_target=0.6654  s_actual=0.6654 
+  i= 97  flip= 57.69  s_target=0.6680  s_actual=0.6680 
+  i= 98  flip= 58.11  s_target=0.6706  s_actual=0.6706 
+  i= 99  flip= 58.52  s_target=0.6732  s_actual=0.6732 
+  i=100  flip= 58.94  s_target=0.6758  s_actual=0.6758 
+  i=101  flip= 59.36  s_target=0.6784  s_actual=0.6784 
+  i=102  flip= 59.79  s_target=0.6809  s_actual=0.6809 
+  i=103  flip= 60.23  s_target=0.6835  s_actual=0.6835 
+  i=104  flip= 60.67  s_target=0.6861  s_actual=0.6861 
+  i=105  flip= 61.10  s_target=0.6887  s_actual=0.6887 
+  i=106  flip= 61.53  s_target=0.6913  s_actual=0.6913 
+  i=107  flip= 61.97  s_target=0.6939  s_actual=0.6939 
+  i=108  flip= 62.42  s_target=0.6965  s_actual=0.6964 
+  i=109  flip= 62.87  s_target=0.6990  s_actual=0.6990 
+  i=110  flip= 63.32  s_target=0.7016  s_actual=0.7016 
+  i=111  flip= 63.77  s_target=0.7042  s_actual=0.7042 
+  i=112  flip= 64.22  s_target=0.7068  s_actual=0.7068 
+  i=113  flip= 64.68  s_target=0.7094  s_actual=0.7094 
+  i=114  flip= 65.15  s_target=0.7120  s_actual=0.7120 
+  i=115  flip= 65.62  s_target=0.7145  s_actual=0.7145 
+  i=116  flip= 66.09  s_target=0.7171  s_actual=0.7171 
+  i=117  flip= 66.55  s_target=0.7197  s_actual=0.7197 
+  i=118  flip= 67.02  s_target=0.7223  s_actual=0.7223 
+  i=119  flip= 67.50  s_target=0.7249  s_actual=0.7249 
+  i=120  flip= 67.99  s_target=0.7275  s_actual=0.7275 
+  i=121  flip= 68.47  s_target=0.7301  s_actual=0.7301 
+  i=122  flip= 68.96  s_target=0.7326  s_actual=0.7326 
+  i=123  flip= 69.44  s_target=0.7352  s_actual=0.7352 
+  i=124  flip= 69.94  s_target=0.7378  s_actual=0.7378 
+  i=125  flip= 70.44  s_target=0.7404  s_actual=0.7404 
+  i=126  flip= 70.94  s_target=0.7430  s_actual=0.7430 
+  i=127  flip= 71.45  s_target=0.7456  s_actual=0.7456 
+  i=128  flip= 71.95  s_target=0.7482  s_actual=0.7482 
+  i=129  flip= 72.46  s_target=0.7507  s_actual=0.7507 
+  i=130  flip= 72.98  s_target=0.7533  s_actual=0.7533 
+  i=131  flip= 73.50  s_target=0.7559  s_actual=0.7559 
+  i=132  flip= 74.02  s_target=0.7585  s_actual=0.7585 
+  i=133  flip= 74.55  s_target=0.7611  s_actual=0.7611 
+  i=134  flip= 75.08  s_target=0.7637  s_actual=0.7637 
+  i=135  flip= 75.62  s_target=0.7662  s_actual=0.7662 
+  i=136  flip= 76.16  s_target=0.7688  s_actual=0.7688 
+  i=137  flip= 76.70  s_target=0.7714  s_actual=0.7714 
+  i=138  flip= 77.24  s_target=0.7740  s_actual=0.7740 
+  i=139  flip= 77.80  s_target=0.7766  s_actual=0.7766 
+  i=140  flip= 78.36  s_target=0.7792  s_actual=0.7792 
+  i=141  flip= 78.92  s_target=0.7818  s_actual=0.7818 
+  i=142  flip= 79.48  s_target=0.7843  s_actual=0.7843 
+  i=143  flip= 80.05  s_target=0.7869  s_actual=0.7869 
+  i=144  flip= 80.63  s_target=0.7895  s_actual=0.7895 
+  i=145  flip= 81.21  s_target=0.7921  s_actual=0.7921 
+  i=146  flip= 81.79  s_target=0.7947  s_actual=0.7947 
+  i=147  flip= 82.37  s_target=0.7973  s_actual=0.7973 
+  i=148  flip= 82.97  s_target=0.7999  s_actual=0.7999 
+  i=149  flip= 83.57  s_target=0.8024  s_actual=0.8024 
+  i=150  flip= 84.18  s_target=0.8050  s_actual=0.8050 
+  i=151  flip= 84.78  s_target=0.8076  s_actual=0.8076 
+  i=152  flip= 85.40  s_target=0.8102  s_actual=0.8102 
+  i=153  flip= 86.02  s_target=0.8128  s_actual=0.8128 
+  i=154  flip= 86.65  s_target=0.8154  s_actual=0.8154 
+  i=155  flip= 87.28  s_target=0.8179  s_actual=0.8179 
+  i=156  flip= 87.91  s_target=0.8205  s_actual=0.8205 
+  i=157  flip= 88.56  s_target=0.8231  s_actual=0.8231 
+  i=158  flip= 89.21  s_target=0.8257  s_actual=0.8257 
+  i=159  flip= 89.86  s_target=0.8283  s_actual=0.8283 
+  i=160  flip= 90.52  s_target=0.8309  s_actual=0.8309 
+  i=161  flip= 91.20  s_target=0.8335  s_actual=0.8335 
+  i=162  flip= 91.87  s_target=0.8360  s_actual=0.8360 
+  i=163  flip= 92.55  s_target=0.8386  s_actual=0.8386 
+  i=164  flip= 93.24  s_target=0.8412  s_actual=0.8412 
+  i=165  flip= 93.94  s_target=0.8438  s_actual=0.8438 
+  i=166  flip= 94.65  s_target=0.8464  s_actual=0.8464 
+  i=167  flip= 95.35  s_target=0.8490  s_actual=0.8490 
+  i=168  flip= 96.07  s_target=0.8516  s_actual=0.8516 
+  i=169  flip= 96.80  s_target=0.8541  s_actual=0.8541 
+  i=170  flip= 97.54  s_target=0.8567  s_actual=0.8567 
+  i=171  flip= 98.28  s_target=0.8593  s_actual=0.8593 
+  i=172  flip= 99.03  s_target=0.8619  s_actual=0.8619 
+  i=173  flip= 99.80  s_target=0.8645  s_actual=0.8645 
+  i=174  flip=100.56  s_target=0.8671  s_actual=0.8671 
+  i=175  flip=101.34  s_target=0.8696  s_actual=0.8696 
+  i=176  flip=102.13  s_target=0.8722  s_actual=0.8722 
+  i=177  flip=102.93  s_target=0.8748  s_actual=0.8748 
+  i=178  flip=103.74  s_target=0.8774  s_actual=0.8774 
+  i=179  flip=104.56  s_target=0.8800  s_actual=0.8800 
+  i=180  flip=105.39  s_target=0.8826  s_actual=0.8826 
+  i=181  flip=106.23  s_target=0.8852  s_actual=0.8852 
+  i=182  flip=107.08  s_target=0.8877  s_actual=0.8877 
+  i=183  flip=107.95  s_target=0.8903  s_actual=0.8903 
+  i=184  flip=108.83  s_target=0.8929  s_actual=0.8929 
+  i=185  flip=109.72  s_target=0.8955  s_actual=0.8955 
+  i=186  flip=110.63  s_target=0.8981  s_actual=0.8981 
+  i=187  flip=111.55  s_target=0.9007  s_actual=0.9007 
+  i=188  flip=112.48  s_target=0.9033  s_actual=0.9033 
+  i=189  flip=113.43  s_target=0.9058  s_actual=0.9058 
+  i=190  flip=114.39  s_target=0.9084  s_actual=0.9084 
+  i=191  flip=115.37  s_target=0.9110  s_actual=0.9110 
+  i=192  flip=116.37  s_target=0.9136  s_actual=0.9136 
+  i=193  flip=117.39  s_target=0.9162  s_actual=0.9162 
+  i=194  flip=118.43  s_target=0.9188  s_actual=0.9188 
+  i=195  flip=119.48  s_target=0.9214  s_actual=0.9214 
+  i=196  flip=120.00  s_target=0.9239  s_actual=0.9214 
+  i=197  flip=120.00  s_target=0.9265  s_actual=0.9211 
