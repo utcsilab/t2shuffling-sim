@@ -210,6 +210,8 @@ if options.save_imgs != None:
 
 
 if options.save_basis != None:
+  print options.basis_name
+
   for m in results.keys():
     U = results[m]["U"]
     k = results[m]['k']
