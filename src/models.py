@@ -1,11 +1,16 @@
 from __future__ import division
-from scipy.optimize import fmin
-from regressors import Multilayer_Regressor as mr
+import os
+
+try:
+    from scipy.optimize import fmin
+    from regressors import Multilayer_Regressor as mr
+    import theanets
+except ImportError:
+    pass
 
 
 import numpy as np
 import sys
-import theanets
 
 
 norm = np.linalg.norm
