@@ -8,10 +8,12 @@
 
 
 import numpy as np
-import matplotlib.pyplot as plt
 
-
-from matplotlib.cm import Greys_r
+try:
+	import matplotlib.pyplot as plt
+	from matplotlib.cm import Greys_r
+except ImportError:
+	pass
 
 
 def readcfl(name):

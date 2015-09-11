@@ -1,28 +1,20 @@
 #!/usr/bin/env python
 
-###def parse_dict(fname):
-    ###d = {}
-    ###with open(fname) as f:
-        ###d = dict([line.split() for line in f])
-    ###return d
-###t2s_params = parse_dict(t2shuffling_params_fname)
-###echoes2skip = int(t2s_params['echoes2skip'])
-###opetl = int(t2s_params['opetl'])
-###num_echoes = opetl - echoes2skip
-###flip_lope = int(t2s_params['flip_lope'])
-
-
 from __future__           import division
 from optparse             import OptionParser
 from os                   import system
 from models               import models_dict
 from cfl                  import readcfl, writecfl, cfl2sqcfl, sqcfl2mat, mat2sqcfl
 from metrics              import get_metric
-from plot                 import plot_simulation, plot_cfl_signals
 from gen_FSEmatrix        import gen_FSEmatrix
 from sys                  import argv, exit
 from warnings             import warn
 import os.path
+
+try:
+    from plot                 import plot_simulation, plot_cfl_signals
+except ImportError:
+        pass
 
 
 import numpy as np
