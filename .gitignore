@@ -6,3 +6,4 @@ src/sort
 src/run*
 src/log*
 .DS_Store
+todo.txt
