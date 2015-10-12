@@ -11,6 +11,8 @@ from sys                  import argv, exit
 from warnings             import warn
 import os.path
 
+import t2phantom as t2p
+
 try:
     from plot                 import plot_simulation, plot_cfl_signals
 except ImportError:
@@ -44,8 +46,10 @@ parser.add_option("--numT2", dest="N", type=int, default=256, help="Number of T2
 parser.add_option("--angles", dest="angles", type=str, default=None, help="Load in Angles in degrees.")
 parser.add_option("--ETL", dest="ETL", type=int, default=None, help="Load in ETL")
 parser.add_option("--TE", dest="TE", type=float, default=5.568e-3, help="Echo spacing (TE) in seconds")
-parser.add_option("--T1vals", dest="T1vals", type=str, default=None, help="Load T1 values from .mat file with variable 'T1vals'")
-parser.add_option("--T2vals", dest="T2vals", type=str, default=None, help="Load T2 values from .mat file with variable 'T2vals'")
+parser.add_option("--T1", dest="T1vals", action="append", help="Specify single T1 value")
+parser.add_option("--T2", dest="T2vals", action="append", help="Specify single T2 value")
+parser.add_option("--T1vals", dest="T1vals_mat", type=str, default=None, help="Load T1 values from .mat file with variable 'T1vals'")
+parser.add_option("--T2vals", dest="T2vals_mat", type=str, default=None, help="Load T2 values from .mat file with variable 'T2vals'")
 
 # universal options
 parser.add_option("--e2s", dest="e2s", type=int, default=2, help="Echoes to skip")
@@ -55,6 +59,10 @@ parser.add_option("--add_control", dest="add_control", action="store_true", defa
 parser.add_option("--print_models", dest="print_models", action="store_true", default=False, help="Print all the model choices and exit.")
 
 # saving options
+parser.add_option("--build_phantom", dest="build_phantom", action="store_true", default=False, help="Build a kspace phantom")
+parser.add_option("--save_phantom", dest="save_phantom", type=str, default=None, help="Pass in path to FOLDER to save phantom.")
+parser.add_option("--set_phantom_name", dest="phantom_name", type=str, default=None, help="Pass this to change saved phantom name")
+
 parser.add_option("--save_basis", dest="save_basis", type=str, default=None, help="Pass in path to FOLDER to save basis.")
 parser.add_option("--save_plots", dest="save_plots", type=str, default=None, help="Pass in path to FOLDER to save plots.")
 parser.add_option("--save_imgs", dest="save_imgs", type=str, default=None, help="Pass in path to FOLDER to save images.")
@@ -120,17 +128,24 @@ elif options.genFSE:
   e2s = options.e2s
   TE  = options.TE
   N   = options.N
-  if not options.T1vals:
+  if options.T1vals is not None:
+      T1vals = np.array([float(T1) for T1 in options.T1vals])
+  elif options.T1vals_mat is not None:
+    T1vals = sio.loadmat(options.T1vals_mat)['T1vals']
+  else:
     T1vals = np.array([500, 700, 1000, 1800]) * 1e-3
+
+  if options.T2vals is not None:
+      T2vals = np.array([float(T2) for T2 in options.T2vals])
+  elif options.T2vals_mat is not None:
+    T2vals = sio.loadmat(options.T2vals_mat)['T2vals']
   else:
-    T1vals = sio.loadmat(options.T1vals)['T1vals']
-  if not options.T2vals:
     T2vals = np.linspace(20e-3, 800e-3, N)
-  else:
-    T2vals = sio.loadmat(options.T2vals)['T2vals']
+
   if T2vals.shape[0] > N:
     idx = np.random.permutation(T2vals.shape[0])
     T2vals = T2vals[idx[0:N]]
+
   T = len(angles)
   N = len(T2vals)
   if not options.ETL:
@@ -221,3 +236,23 @@ if options.save_basis != None:
       cfl_name = 'bas.' + m + k_ext + timestamp
 
     writecfl(os.path.join(options.save_basis, cfl_name), U)
+
+if options.build_phantom:
+    print "------------------------------------------------------------"
+    print "Building Phantom"
+    print ""
+    FOV = (25.6, 25.6) # cm
+    dims = np.array([240, 260]) # pixels
+    res = FOV / dims
+    P = t2p.Phantom(FOV, res)
+    P.knee_objects_relax(T2vals, X)
+    ksp = np.fliplr(P.build()[None, :, :, None, None, :])
+    print "------------------------------------------------------------"
+
+    if options.save_phantom != None:
+        if options.phantom_name != None:
+            cfl_name = options.phantom_name
+        else:
+            cfl_name = 'ksp.' + m + k_ext + timestamp
+
+        writecfl(os.path.join(options.save_phantom, cfl_name), ksp)
