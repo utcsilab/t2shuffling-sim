@@ -52,7 +52,7 @@ parser.add_option("--e2s", dest="e2s", type=int, default=2, help="Echoes to skip
 parser.add_option("-K", "--dim", dest="k", type=int, default=None, help="Number of basis vectors to construct. This only effects the reconstructed Xhat")
 parser.add_option("--model", dest="model", type=str, default=[], action="append", help="The model you want to test")
 parser.add_option("--add_control", dest="add_control", action="store_true", default=False, help="Set this flag if you want to compare said model with svd")
-parser.add_option("--print-models", dest="print_models", action="store_true", default=False, help="Print all the model choices and exit.")
+parser.add_option("--print_models", dest="print_models", action="store_true", default=False, help="Print all the model choices and exit.")
 
 # saving options
 parser.add_option("--save_basis", dest="save_basis", type=str, default=None, help="Pass in path to FOLDER to save basis.")
