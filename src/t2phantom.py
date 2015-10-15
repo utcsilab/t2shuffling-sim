@@ -8,7 +8,7 @@ import scipy.special
 
 class Phantom:
 
-    def __init__(self, FOV, res):
+    def __init__(self, FOV=(25.6, 25.6), res=(.1, .1)):
         self.FOV = np.array(FOV)
         self.res = np.array(res)
         self.img_dims = np.ceil(self.FOV / self.res)
@@ -31,11 +31,11 @@ class Phantom:
        idx_eps = K <= .001
        idx_neps = K > .001
 
-       j1 = scipy.special.jv(1, np.pi * K[idx_neps]) / (np.pi * K[idx_neps])
+       j1 = scipy.special.jv(1,  np.pi * K[idx_neps]) / (2 * K[idx_neps])
        # taylor series expansion about K ~ 0
        j1_taylor = 1 - (np.pi * K[idx_eps])**2 / 2 + (np.pi * K[idx_eps])**4 / 12
 
-       ep = np.pi * np.prod(diam) * np.exp(-2 * np.pi * 1j * np.sum(np.array(cen)[:, None, None] * ksp_grid_angle, 0))
+       ep = np.prod(diam) * np.exp(-1j * 2 * np.pi * np.sum(np.array(cen)[:, None, None] * self.ksp_grid, 0))
        ep[idx_eps] *= j1_taylor
        ep[idx_neps] *= j1
 
@@ -47,22 +47,31 @@ class Phantom:
        ep2 = self.ellipsoid(np.array(diam) - np.array(width) / 2, cen, angle_deg)
        return ep1 - ep2
 
-    def build_exp(self, p0, objects, te=5):
+    def build(self):
+        return self.build_exp(0)
+
+    def build_exp(self, te=5):
+        p0, objects = self.p0, self.objects
         pd_0 = p0['pd']
         ep_0 = p0['ep']
         t2_0 = p0['t2']
-        ep = pd_0 * ep_0 * np.exp(-te/t2_0)
-        for obj in objects:
-            _ep = obj['ep']
-            _pd = obj['pd']
-            _t2 = obj['t2']
-            # first cut out ep1 from ep
-            ep -= pd_0 * _ep * np.exp(-te/t2_0)
-            # next weight it by pd
-            ep += _pd * _ep * np.exp(-te/_t2)
+        ep_bg = ep_0
+        # do a first pass to make background
+        if not objects is None:
+            for obj in objects:
+                _ep = obj['ep']
+                ep_bg -= _ep
+        # do a second pass to fill shapes
+        ep = pd_0 * ep_bg * np.exp(-te/t2_0)
+        if objects != None:
+            for obj in objects:
+                _ep = obj['ep']
+                _pd = obj['pd']
+                _t2 = obj['t2']
+                ep += _pd * _ep * np.exp(-te/_t2)
         return ep
 
-    def build(self):
+    def build_flipmod(self):
         p0, objects = self.p0, self.objects
         pd_0 = p0['pd']
         ep_0 = p0['ep']
@@ -83,7 +92,7 @@ class Phantom:
             ep += _pd * _ep[:, :, None] * _x[None, None, :]
         return ep
 
-    def populate_objects(self, p0, objects):
+    def populate_objects(self, p0, objects=None):
         self.p0 = p0
         self.objects = objects
 
@@ -131,13 +140,13 @@ class Phantom:
             })
 
         objects.append({
-            'ep' : self.ellipsoid((10, 3), (3, -4), 12),
+            'ep' : self.ellipsoid((8.2, 3), (4, -4), 12),
             'pd' : 1,
             't2' : 70,
             })
 
         objects.append({
-            'ep' : self.ellipsoid((10, 3), (-3, -4), -12),
+            'ep' : self.ellipsoid((8.2, 3), (-4, -4), -12),
             'pd' : 1,
             't2' : 80.,
             })
@@ -210,19 +219,19 @@ class Phantom:
 
         objects.append({
             'ep' : self.ellipsoid((.3, .3), (-5.5, 9)),
-            'pd' : 1,
-            't2' : 800.,
+            'pd' : 1.4,
+            't2' : 750.,
             })
 
         objects.append({
             'ep' : self.ellipsoid((.3, .3), (4.5, -8)),
-            'pd' : 1,
-            't2' : 800.,
+            'pd' : .7,
+            't2' : 850.,
             })
 
         objects.append({
             'ep' : self.ellipsoid((.3, .3), (5, 0)),
-            'pd' : 1,
+            'pd' : 1.8,
             't2' : 800.,
             })
 
@@ -238,7 +247,7 @@ def fft2c(x):
     return 1 / np.sqrt(x.shape[0]*x.shape[1]) * np.fft.fftshift(np.fft.fft2(np.fft.ifftshift(x, axes=(0,1)), axes=(0,1)), axes=(0,1))
 
 def ifft2c(x):
-    return np.sqrt(x.shape[0]*x.shape[1]) * np.fft.ifftshift(np.fft.fft2(np.fft.fftshift(x, axes=(0,1)), axes=(0,1)), axes=(0,1))
+    return np.sqrt(x.shape[0]*x.shape[1]) * np.fft.ifftshift(np.fft.ifft2(np.fft.fftshift(x, axes=(0,1)), axes=(0,1)), axes=(0,1))
 
 
 def main(FOV, dims):

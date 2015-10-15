@@ -246,7 +246,7 @@ if options.build_phantom:
     res = FOV / dims
     P = t2p.Phantom(FOV, res)
     P.knee_objects_relax(T2vals, X)
-    ksp = np.fliplr(P.build()[None, :, :, None, None, :])
+    ksp = np.fliplr(P.build_flipmod()[None, :, :, None, None, :])
     print "------------------------------------------------------------"
 
     if options.save_phantom != None:
