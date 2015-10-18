@@ -11,7 +11,13 @@ from sys                  import argv, exit
 from warnings             import warn
 import os.path
 
+import imp
 import t2phantom as t2p
+
+try:
+    import Phantom
+except ImportError:
+    pass
 
 try:
     from plot                 import plot_simulation, plot_cfl_signals
@@ -25,6 +31,7 @@ import scipy.io as sio
 
 time_stamp = ""
 
+np.random.seed(723)
 
 parser = OptionParser()
 
@@ -59,9 +66,11 @@ parser.add_option("--add_control", dest="add_control", action="store_true", defa
 parser.add_option("--print_models", dest="print_models", action="store_true", default=False, help="Print all the model choices and exit.")
 
 # saving options
-parser.add_option("--build_phantom", dest="build_phantom", action="store_true", default=False, help="Build a kspace phantom")
+parser.add_option("--build_phantom", dest="build_phantom", action="store_true", default=False, help="Build a phantom")
+parser.add_option("--load_phantom_data", dest="phantom_data", default=None, help="Pre-computed phantom data")
 parser.add_option("--save_phantom", dest="save_phantom", type=str, default=None, help="Pass in path to FOLDER to save phantom.")
 parser.add_option("--set_phantom_name", dest="phantom_name", type=str, default=None, help="Pass this to change saved phantom name")
+parser.add_option("--set_t2map_name", dest="t2map_name", type=str, default=None, help="Pass this to change saved t2 map name")
 
 parser.add_option("--save_basis", dest="save_basis", type=str, default=None, help="Pass in path to FOLDER to save basis.")
 parser.add_option("--save_plots", dest="save_plots", type=str, default=None, help="Pass in path to FOLDER to save plots.")
@@ -127,7 +136,13 @@ elif options.genFSE:
   angles = angles * np.pi/180
   e2s = options.e2s
   TE  = options.TE
-  N   = options.N
+
+  if options.phantom_data != None:
+      phantom_data = readcfl(options.phantom_data)
+      N = phantom_data.shape[2]
+  else:
+      N   = options.N
+
   if options.T1vals is not None:
       T1vals = np.array([float(T1) for T1 in options.T1vals])
   elif options.T1vals_mat is not None:
@@ -241,12 +256,24 @@ if options.build_phantom:
     print "------------------------------------------------------------"
     print "Building Phantom"
     print ""
-    FOV = (25.6, 25.6) # cm
-    dims = np.array([240, 260]) # pixels
-    res = FOV / dims
-    P = t2p.Phantom(FOV, res)
-    P.knee_objects_relax(T2vals, X)
-    ksp = np.fliplr(P.build_flipmod()[None, :, :, None, None, :])
+    if options.phantom_data != None:
+        ksp = np.zeros((phantom_data.shape[0], phantom_data.shape[1], ETL), dtype='complex64')
+        imgs = Phantom.ifft2c(np.transpose(phantom_data, (1, 0, 2)))
+        T2im = np.zeros(phantom_data.shape[:2])
+        idx = np.random.permutation(N)
+        idx = range(N)
+        for i in range(N)[::-1]:
+            # workaround for values stacking
+            scale = .99**i
+            ksp += scale * phantom_data[:, :, i].T[:, :, None] * X[None, None, :, idx[i]]
+            T2im[np.where(np.abs(imgs[:, :, i]) > 1)] += scale *T2vals[idx[i]]
+    else:
+        FOV = (25.6, 25.6) # cm
+        dims = np.array([240, 260]) # pixels
+        res = FOV / dims
+        P = t2p.Phantom(FOV, res)
+        P.knee_objects_relax(T2vals, X)
+        ksp = np.fliplr(P.build_flipmod()[None, :, :, None, None, :])
     print "------------------------------------------------------------"
 
     if options.save_phantom != None:
@@ -256,3 +283,10 @@ if options.build_phantom:
             cfl_name = 'ksp.' + m + k_ext + timestamp
 
         writecfl(os.path.join(options.save_phantom, cfl_name), ksp)
+
+        if options.t2map_name != None:
+            cfl_name = options.t2map_name
+        else:
+            cfl_name = 't2map.' + m + k_ext + timestamp
+
+        writecfl(os.path.join(options.save_phantom, cfl_name), T2im)
