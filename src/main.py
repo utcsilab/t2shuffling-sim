@@ -14,10 +14,7 @@ import os.path
 import imp
 import t2phantom as t2p
 
-try:
-    import Phantom
-except ImportError:
-    pass
+import Phantom
 
 try:
     from plot                 import plot_simulation, plot_cfl_signals
@@ -31,7 +28,7 @@ import scipy.io as sio
 
 time_stamp = ""
 
-np.random.seed(723)
+np.random.seed(725)
 
 parser = OptionParser()
 
@@ -282,11 +279,11 @@ if options.build_phantom:
         else:
             cfl_name = 'ksp.' + m + k_ext + timestamp
 
-        writecfl(os.path.join(options.save_phantom, cfl_name), ksp)
+        writecfl(os.path.join(options.save_phantom, cfl_name), ksp[None, :, :, None, None, :])
 
         if options.t2map_name != None:
             cfl_name = options.t2map_name
         else:
             cfl_name = 't2map.' + m + k_ext + timestamp
 
-        writecfl(os.path.join(options.save_phantom, cfl_name), T2im)
+        writecfl(os.path.join(options.save_phantom, cfl_name), T2im[None, :, :])
