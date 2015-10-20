@@ -4,10 +4,11 @@
 # Contact: Matthieu Guerquin-Kern, Biomedical Imaging Group / EPF Lausanne
 import numpy as np
 
-def shep():
+np.random.seed(723)
+t2_vals = np.random.permutation(np.hstack((.2 * np.random.rand((200)))))
+t1_vals = np.random.permutation( .3 + (1.5 - .3) * np.random.rand((200)))
 
-    t2_vals = np.random.permutation(np.hstack((.2 * np.random.rand((20)), .8*np.random.rand((2)))))
-    t1_vals = np.random.permutation( .8 + (1 - .8) * np.random.rand((200)))
+def shep():
 
     shep = np.array([[  1,   .69,   .92,    0,     0,     0],
         [-.8,  .6624, .8740,   0,  -.0184,   0],
@@ -39,8 +40,6 @@ def shep():
 
 
 def simple_brain():
-    t1_vals = np.random.permutation( .8 + (1 - .8) * np.random.rand((200)))
-    t2_vals = np.random.permutation(np.hstack((.2 * np.random.rand((20)), np.random.rand((2)))))
     # Gray level 0: Black background
     rho = .22
     brain = {
@@ -49,7 +48,7 @@ def simple_brain():
             }
     ii = 0
     brain['shapes'].append( {
-        'T1' : t1_vals[ii],
+        'T1' : np.max((t1_vals[ii], t2_vals[ii])),
         'T2' : t2_vals[ii],
         'type' : 'bezier',
         'rho' : rho,
@@ -66,7 +65,7 @@ def simple_brain():
         })
     ii += 1
     brain['shapes'].append( {
-        'T1' : t1_vals[ii],
+        'T1' : np.max((t1_vals[ii], t2_vals[ii])),
         'T2' : t2_vals[ii],
         'type' : 'bezier',
         'rho' : rho,
@@ -84,7 +83,7 @@ def simple_brain():
         })
     ii += 1
     brain['shapes'].append({
-        'T1' : t1_vals[ii],
+        'T1' : np.max((t1_vals[ii], t2_vals[ii])),
         'T2' : t2_vals[ii],
         'type' : 'bezier',
         'rho' : rho,
@@ -109,7 +108,7 @@ def simple_brain():
         })
     ii += 1
     brain['shapes'].append({
-        'T1' : t1_vals[ii],
+        'T1' : np.max((t1_vals[ii], t2_vals[ii])),
         'T2' : t2_vals[ii],
         'type' : 'bezier',
         'rho' : rho,
@@ -138,12 +137,10 @@ def brain():
     rho3 = .2
     rho4 = .44
 
-    t1_vals = np.random.permutation( .8 + (1 - .8) * np.random.rand((200)))
-    t2_vals = np.random.permutation(np.hstack((.2 * np.random.rand((200)), np.random.rand((50)))))
     ii = 0
 
     brain['shapes'].append({
-        'T1' : t1_vals[ii],
+        'T1' : np.max((t1_vals[ii], t2_vals[ii])),
         'T2' : t2_vals[ii],
         'type' : 'bezier',
         'rho' : rho1,
@@ -156,7 +153,7 @@ def brain():
         })
     ii += 1
     brain['shapes'].append({
-        'T1' : t1_vals[ii],
+        'T1' : np.max((t1_vals[ii], t2_vals[ii])),
         'T2' : t2_vals[ii],
         'type' : 'bezier',
         'rho' : rho1,
@@ -176,7 +173,7 @@ def brain():
         })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho1,
@@ -203,7 +200,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho1,'control' : np.array([ [.375958, -.007543], [.393543, -.022122], [.405578, -.021731], [.411448, -.01543],
@@ -211,7 +208,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho1,
@@ -222,7 +219,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho1,
@@ -230,7 +227,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho1,
@@ -238,7 +235,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho1,
@@ -246,7 +243,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho1,
@@ -254,7 +251,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho1,
@@ -262,7 +259,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho1,
@@ -270,7 +267,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho2,
@@ -284,7 +281,7 @@ def brain():
     })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho2,
@@ -292,7 +289,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho2,
@@ -300,7 +297,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho2,
@@ -308,7 +305,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho2,
@@ -316,7 +313,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho2,
@@ -324,7 +321,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho2,
@@ -332,7 +329,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho2,
@@ -363,7 +360,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho2,
@@ -371,7 +368,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho2,
@@ -379,7 +376,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho2,
@@ -387,7 +384,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho2,
@@ -395,7 +392,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho2,
@@ -403,7 +400,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho2,
@@ -411,7 +408,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho2,
@@ -419,7 +416,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho2,
@@ -427,7 +424,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho2,
@@ -435,7 +432,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho2,
@@ -443,7 +440,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho2,
@@ -451,7 +448,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho2,
@@ -459,7 +456,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho2,
@@ -467,7 +464,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho2,
@@ -475,7 +472,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho2,
@@ -483,7 +480,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho2,
@@ -491,7 +488,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho2,
@@ -499,7 +496,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho2,
@@ -507,7 +504,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho2,
@@ -515,7 +512,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -523,7 +520,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -531,7 +528,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -539,7 +536,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -547,7 +544,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -555,7 +552,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -563,7 +560,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -571,7 +568,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -579,7 +576,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -587,7 +584,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -595,7 +592,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -603,7 +600,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -611,7 +608,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -619,7 +616,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -627,7 +624,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -635,7 +632,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -643,7 +640,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -651,7 +648,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -659,7 +656,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -667,7 +664,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -675,7 +672,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -683,7 +680,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -691,7 +688,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -699,7 +696,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -707,7 +704,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -715,7 +712,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -723,7 +720,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -731,7 +728,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -739,7 +736,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -747,7 +744,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -755,7 +752,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -763,7 +760,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -771,7 +768,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -779,7 +776,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -787,7 +784,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -795,7 +792,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -803,7 +800,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -811,7 +808,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -819,7 +816,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -827,7 +824,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -835,7 +832,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -843,7 +840,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -851,7 +848,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -859,7 +856,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -867,7 +864,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -875,7 +872,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -883,7 +880,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -891,7 +888,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'ellipse',
 'rho' : rho3,
@@ -901,7 +898,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -909,7 +906,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -917,7 +914,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -925,7 +922,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -933,7 +930,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'ellipse',
 'rho' : rho3,
@@ -943,7 +940,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -951,7 +948,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -959,7 +956,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho3,
@@ -967,7 +964,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho4,
@@ -975,7 +972,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'ellipse',
 'rho' : rho4,
@@ -985,7 +982,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho4,
@@ -993,7 +990,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho4,
@@ -1001,7 +998,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho4,
@@ -1009,7 +1006,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho4,
@@ -1017,7 +1014,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho4,
@@ -1025,7 +1022,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho4,
@@ -1033,7 +1030,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho4,
@@ -1041,7 +1038,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho4,
@@ -1049,7 +1046,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho4,
@@ -1057,7 +1054,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho4,
@@ -1065,7 +1062,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho4,
@@ -1073,7 +1070,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho4,
@@ -1081,7 +1078,7 @@ def brain():
 })
     ii += 1
     brain['shapes'].append({
-'T1' : t1_vals[ii],
+'T1' : np.max((t1_vals[ii], t2_vals[ii])),
 'T2' : t2_vals[ii],
 'type' : 'bezier',
 'rho' : rho4,
