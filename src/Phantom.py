@@ -130,8 +130,29 @@ def rasterize_shape(shape, Y, Z, t2relax=None, t1relax=None, TR=1.4, TE=5e-3, T=
 
     return _img
 
+
+
+# like multibuild_phantom, but returns N 2D images, where the n'th element is a t2 map of the n'th shape in the phantom
+def multibuild_t1t2phantom(phantom, dims, oversamp=1, T=32, verbose=False):
+
+    phantom_const = phantom.copy()
+    for ii, shape in enumerate(phantom['shapes']):
+        phantom_const['shapes'][ii]['rho'] = 1
+
+    imgs = multibuild_phantom(phantom_const, dims, oversamp, t2relax=None, t1relax=None, TR=None, TE=None, T=T, verbose=verbose)
+
+    t1im = imgs.copy()
+    t2im = imgs.copy()
+
+    for ii, shape in enumerate(phantom_const['shapes']):
+        t1im[:, :, ii] = shape['T1'] * imgs[:, :, ii]
+        t2im[:, :, ii] = shape['T2'] * imgs[:, :, ii]
+
+    return t1im, t2im
+
+
 # returns an array of N 2D images, where the n'th element is the image of the n'th shape in phantom
-def multibuild_phantom(phantom, dims, oversamp=1, verbose=False):
+def multibuild_phantom(phantom, dims, oversamp=1, t2relax=None, t1relax=None, TR=1.4, TE=5e-3, T=32, verbose=False):
 
     N = len(phantom['shapes'])
     dims2 = [d*oversamp for d in dims]
@@ -151,7 +172,7 @@ def multibuild_phantom(phantom, dims, oversamp=1, verbose=False):
 
     for ii, shape in enumerate(phantom['shapes']):
 
-        imgs[:, :, ii] = rasterize_shape(shape, Y, Z, t2relax=None, t1relax=None)
+        imgs[:, :, ii] = rasterize_shape(shape, Y, Z, t2relax, t1relax, TR, TE, T)
 
         if verbose:
             bar.update(count)
@@ -160,16 +181,7 @@ def multibuild_phantom(phantom, dims, oversamp=1, verbose=False):
     if verbose:
         bar.finish()
 
-
-    if oversamp > 1:
-        if verbose:
-            print 'Downsampling...'
-
-        cen = [np.floor(d/2) for d in dims2]
-        ksp = fft2c(imgs)
-        ksp2 = ksp[cen[0] - np.floor(dims[0]/2) : cen[0] + np.floor(dims[0]/2),
-                cen[1] - np.floor(dims[1]/2) : cen[1] + np.floor(dims[1]/2)]
-        imgs = ifft2c(ksp2)
+    imgs = resample(imgs, dims, dims2, oversamp, verbose)
 
     return imgs
 
@@ -178,38 +190,17 @@ def multibuild_phantom(phantom, dims, oversamp=1, verbose=False):
 # returns a 2D image corresponding to the phantom
 def build_phantom(phantom, dims, oversamp=1, t2relax=None, t1relax=None, TR=1.4, TE=5e-3, T=32, verbose=False):
 
-    N = len(phantom['shapes'])
-    dims2 = [d*oversamp for d in dims]
-    Y, Z = gen_grid(dims2)
+    imgs = multibuild_phantom(phantom, dims, oversamp, t2relax, t1relax, TR, TE, T, verbose)
+    img = np.sum(imgs, 2)
 
-    Y = Y / dims2[0] * phantom['FOV'][0]
-    Z = Z / dims2[1] * phantom['FOV'][1]
-
-    img = np.zeros(dims2)
-
-    if verbose:
-        count = 0
-        bar = progressbar.ProgressBar(maxval=N, widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
-        bar.start()
+    return img
 
 
-    for ii, shape in enumerate(phantom['shapes']):
 
-        _img = rasterize_shape(shape, Y, Z, t2relax, t1relax, TR, TE, T)
-
-        img += _img
-
-        if verbose:
-            bar.update(count)
-            count += 1
-
-    if verbose:
-        bar.finish()
-
-    if verbose:
-        print 'Downsampling...'
-
+def resample(img, dims, dims2, oversamp=1, verbose=False):
     if oversamp > 1:
+        if verbose:
+            print 'Downsampling...'
         cen = [np.floor(d/2) for d in dims2]
         ksp = fft2c(img)
         ksp2 = ksp[cen[0] - np.floor(dims[0]/2) : cen[0] + np.floor(dims[0]/2),
@@ -246,8 +237,12 @@ if __name__ == "__main__":
 #
     #cfl.writecfl('img', mask)
 
-    masks = multibuild_phantom(brain, dims, oversamp, verbose=True)
-    cfl.writecfl('masks-2048', masks)
+    #masks = multibuild_phantom(brain, dims, oversamp, verbose=True)
+
+    t1im, t2im = multibuild_t1t2phantom(brain, dims, oversamp, verbose=True)
+
+    cfl.writecfl('t1im-%d' % dims[0], t1im)
+    cfl.writecfl('t2im-%d' % dims[0], t2im)
 
 
 
