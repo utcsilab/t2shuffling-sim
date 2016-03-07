@@ -5,7 +5,10 @@ from __future__ import division
 import numpy as np
 import scipy.special
 from matplotlib.path import Path
-import progressbar
+try:
+	import progressbar
+except ImportError:
+	progressbar=None
 
 import sys
 
@@ -164,7 +167,7 @@ def multibuild_phantom(phantom, dims, oversamp=1, t2relax=None, t1relax=None, TR
     dims2.append(N)
     imgs = np.zeros(dims2)
 
-    if verbose:
+    if verbose and progressbar != None:
         count = 0
         bar = progressbar.ProgressBar(maxval=N, widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
         bar.start()
@@ -175,10 +178,11 @@ def multibuild_phantom(phantom, dims, oversamp=1, t2relax=None, t1relax=None, TR
         imgs[:, :, ii] = rasterize_shape(shape, Y, Z, t2relax, t1relax, TR, TE, T)
 
         if verbose:
-            bar.update(count)
+            if progressbar != None:
+                bar.update(count)
             count += 1
 
-    if verbose:
+    if verbose and progressbar != None:
         bar.finish()
 
     imgs = resample(imgs, dims, dims2, oversamp, verbose)
