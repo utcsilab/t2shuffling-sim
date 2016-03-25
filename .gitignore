@@ -7,3 +7,5 @@ src/run*
 src/log*
 .DS_Store
 todo.txt
+
+src/.ipynb_checkpoints
