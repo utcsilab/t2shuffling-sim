@@ -175,7 +175,7 @@ if __name__ == "__main__":
     TE = 5e-3
 
     N = 100
-    angles = 180 * np.ones((N,))
+    angles = 120 * np.ones((N,))
     angles_rad = angles * pi / 180.
 
     S = FSE_signal(angles_rad, TE, T1, T2)
