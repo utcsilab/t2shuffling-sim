@@ -14,7 +14,10 @@ import os.path
 import imp
 import t2phantom as t2p
 
-import Phantom
+try:
+    import Phantom
+    except ImportError:
+        pass
 
 try:
     from plot                 import plot_simulation, plot_cfl_signals
