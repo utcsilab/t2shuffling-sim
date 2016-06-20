@@ -31,7 +31,7 @@ import scipy.io as sio
 
 time_stamp = ""
 
-np.random.seed(725)
+np.random.seed(723)
 
 parser = OptionParser()
 
@@ -257,7 +257,10 @@ if options.build_phantom:
     print "Building Phantom"
     print ""
     if options.phantom_data != None:
+        print X.shape
+        print ETL
         ksp = np.zeros((phantom_data.shape[0], phantom_data.shape[1], ETL), dtype='complex64')
+        print ksp.shape
         imgs = Phantom.ifft2c(np.transpose(phantom_data, (1, 0, 2)))
         T2im = np.zeros(phantom_data.shape[:2])
         idx = np.random.permutation(N)
