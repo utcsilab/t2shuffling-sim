@@ -180,7 +180,7 @@ def multibuild_phantom(phantom, dims, oversamp=1, t2relax=None, t1relax=None, TR
         if verbose:
             if progressbar != None:
                 bar.update(count)
-            count += 1
+                count += 1
 
     if verbose and progressbar != None:
         bar.finish()
