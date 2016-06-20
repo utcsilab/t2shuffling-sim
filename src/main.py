@@ -16,7 +16,7 @@ import t2phantom as t2p
 
 try:
     import Phantom
-    except ImportError:
+except ImportError:
         pass
 
 try:
