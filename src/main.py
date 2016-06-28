@@ -28,6 +28,7 @@ except ImportError:
 import numpy as np
 import scipy.io as sio
 
+import matplotlib.pyplot as plt
 
 time_stamp = ""
 
@@ -58,6 +59,11 @@ parser.add_option("--T2", dest="T2vals", action="append", help="Specify single T
 parser.add_option("--T1vals", dest="T1vals_mat", type=str, default=None, help="Load T1 values from .mat file with variable 'T1vals'")
 parser.add_option("--T2vals", dest="T2vals_mat", type=str, default=None, help="Load T2 values from .mat file with variable 'T2vals'")
 
+# contrast synthesis
+parser.add_option("--contrast_synthesis", dest="contrast_synthesis", action="store_true", default=False, help="Generate contrast synthesis matrix")
+parser.add_option("--set_csynth_name", dest="csynth_name", type=str, default=None, help="Pass this to change saved csynth name. USE ONLY IF TESTING 1 MODEL.")
+parser.add_option("--save_csynth", dest="save_csynth", type=str, default=None, help="Pass in path to FOLDER to save csynth matrix.")
+
 # universal options
 parser.add_option("--e2s", dest="e2s", type=int, default=2, help="Echoes to skip")
 parser.add_option("-K", "--dim", dest="k", type=int, default=None, help="Number of basis vectors to construct. This only effects the reconstructed Xhat")
@@ -76,6 +82,7 @@ parser.add_option("--save_basis", dest="save_basis", type=str, default=None, hel
 parser.add_option("--save_plots", dest="save_plots", type=str, default=None, help="Pass in path to FOLDER to save plots.")
 parser.add_option("--save_imgs", dest="save_imgs", type=str, default=None, help="Pass in path to FOLDER to save images.")
 parser.add_option("--set_basis_name", dest="basis_name", type=str, default=None, help="Pass this to change saved basis name. USE ONLY IF TESTING 1 MODEL.")
+
 
 
 options, args = parser.parse_args()
@@ -229,6 +236,39 @@ if options.save_imgs != None:
   # TODO
   warn('TODO: implement options.save_imgs')
   None
+
+
+if options.contrast_synthesis:
+    print "------------------------------------------------------------"
+    print "Computing contrast synthesis matrix"
+    print ""
+
+    Xe = gen_FSEmatrix(N, np.pi * np.ones(T), ETL, e2s, TE, T1vals, T2vals)
+
+    for m in results.keys():
+        k = results[m]['k']
+        res = results[m]
+        alpha = res['alpha'][:k, :]
+        AA = np.kron(np.eye(ETL), np.asarray(alpha.T))
+        y = np.ravel(Xe)
+        Qflat = np.linalg.lstsq(AA, y)[0]
+        Q = np.reshape(Qflat, (ETL, k))
+        res['Q'] = Q
+
+        if options.save_csynth != None:
+            print options.csynth_name
+
+            for i in range(5):
+                Q = np.expand_dims(Q, axis=0)
+
+            k_ext = '_k_%d' % k
+
+            if options.csynth_name != None:
+                cfl_name = options.csynth_name  
+            else:
+                cfl_name = 'csynth.' + m + k_ext + timestamp
+
+            writecfl(os.path.join(options.save_csynth, cfl_name), Q)
 
 
 if options.save_basis != None:
