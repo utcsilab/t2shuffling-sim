@@ -21,14 +21,13 @@ except ImportError:
 
 try:
     from plot                 import plot_simulation, plot_cfl_signals
+    import matplotlib.pyplot as plt
 except ImportError:
         pass
 
 
 import numpy as np
 import scipy.io as sio
-
-import matplotlib.pyplot as plt
 
 time_stamp = ""
 
