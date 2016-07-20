@@ -56,8 +56,11 @@ parser.add_option("--ETL", dest="ETL", type=int, default=None, help="Load in ETL
 parser.add_option("--TE", dest="TE", type=float, default=5.568e-3, help="Echo spacing (TE) in seconds")
 parser.add_option("--T1", dest="T1vals", action="append", help="Specify single T1 value")
 parser.add_option("--T2", dest="T2vals", action="append", help="Specify single T2 value")
+parser.add_option("--TR", dest="TRvals", action="append", help="Specify single TR value")
 parser.add_option("--T1vals", dest="T1vals_mat", type=str, default=None, help="Load T1 values from .mat file with variable 'T1vals'")
 parser.add_option("--T2vals", dest="T2vals_mat", type=str, default=None, help="Load T2 values from .mat file with variable 'T2vals'")
+parser.add_option("--TRvals", dest="TRvals_mat", type=str, default=None, help="Load TR values from .mat file with variable 'TRvals'")
+parser.add_option("--driveq", dest="driven_equil", action="store_true", default=False, help="Simulate driven equilibrium")
 
 # contrast synthesis
 parser.add_option("--contrast_synthesis", dest="contrast_synthesis", action="store_true", default=False, help="Generate contrast synthesis matrix")
@@ -70,6 +73,7 @@ parser.add_option("-K", "--dim", dest="k", type=int, default=None, help="Number 
 parser.add_option("--model", dest="model", type=str, default=[], action="append", help="The model you want to test")
 parser.add_option("--add_control", dest="add_control", action="store_true", default=False, help="Set this flag if you want to compare said model with svd")
 parser.add_option("--print_models", dest="print_models", action="store_true", default=False, help="Print all the model choices and exit.")
+parser.add_option("--no_verbose", dest="verbose", action="store_false", default=True, help="Turn off verbose output.")
 
 # saving options
 parser.add_option("--build_phantom", dest="build_phantom", action="store_true", default=False, help="Build a phantom")
@@ -164,6 +168,13 @@ elif options.genFSE:
     else:
         T2vals = np.linspace(20e-3, 800e-3, N)
 
+    if options.TRvals is not None:
+        TRvals = np.array([float(TR) for TR in options.TRvals])
+    elif options.TRvals_mat is not None:
+        TRvals = sio.loadmat(options.TRvals_mat)['TRvals']
+    else:
+        TRvals = np.array([np.inf])
+
     if T2vals.shape[0] > N:
         idx = np.random.permutation(T2vals.shape[0])
         T2vals = T2vals[idx[0:N]]
@@ -180,10 +191,11 @@ elif options.genFSE:
     T1vals = np.sort(np.ravel(T1vals))
     T2vals = np.sort(np.ravel(T2vals))
 
-    X = gen_FSEmatrix(N, angles, ETL, e2s, TE, T1vals, T2vals)
+    X = gen_FSEmatrix(angles, ETL, e2s, TE, T1vals, T2vals, TRvals, options.driven_equil, options.verbose)
 
     if options.saveFSE != None:
-        print "Saving as " + options.saveFSE + time_stamp
+        if options.verbose:
+            print "Saving as " + options.saveFSE + time_stamp
         sio.savemat(options.saveFSE + time_stamp, {"X": X, "angles": angles, "N": N, "ETL":ETL, "e2s":e2s, "TE": TE, "T1vals":T1vals, "T2vals":T2vals})
 
 else:
@@ -199,10 +211,12 @@ else:
 
 
 if rvc == 'real':
-    print 'real value constraint'
+    if options.verbose:
+        print 'real value constraint'
     X = np.real(X)
 elif rvc == 'abs':
-    print 'abs value constraint'
+    if options.verbose:
+        print 'abs value constraint'
     X = np.abs(X)
 
 
@@ -213,18 +227,21 @@ if options.model == 'all':
     lst = models.keys()
 results = {}
 for m in lst:
-    print "------------------------------------------------------------"
-    print "Running " + m
-    print "------------------------------------------------------------"
+    if options.verbose:
+        print "------------------------------------------------------------"
+        print "Running " + m
+        print "------------------------------------------------------------"
     model = models_dict[m]
     k = options.k
     U, alpha, X_hat = model(X, options.k, rvc)
-    print "Results:"
-    signal_perc_err, TE_perc_err, fro_perc_err = get_metric(X, X_hat)
+    if options.verbose:
+        print "Results:"
+    signal_perc_err, TE_perc_err, fro_perc_err = get_metric(X, X_hat, options.verbose)
     if not k:
         k = U.shape[1]
     results[m] = {'U':U, 'alpha':alpha, 'k':k, 'X_hat': X_hat, 'Percentage Error per Signal': signal_perc_err, 'Percentage Error per TE': TE_perc_err, 'Frobenius Percentage Error': fro_perc_err}
-print "------------------------------------------------------------"
+if options.verbose:
+    print "------------------------------------------------------------"
 
 
 if options.save_plots != None:
@@ -243,9 +260,10 @@ if options.save_imgs != None:
 
 
 if options.contrast_synthesis:
-    print "------------------------------------------------------------"
-    print "Computing contrast synthesis matrix"
-    print ""
+    if options.verbose:
+        print "------------------------------------------------------------"
+        print "Computing contrast synthesis matrix"
+        print ""
 
     Xe = gen_FSEmatrix(N, np.pi * np.ones(T), ETL, e2s, TE, T1vals, T2vals)
 
@@ -276,7 +294,8 @@ if options.contrast_synthesis:
 
 
 if options.save_basis != None:
-    print options.basis_name
+    if options.verbose:
+        print options.basis_name
 
     for m in results.keys():
         U = results[m]["U"]
@@ -297,14 +316,17 @@ if options.save_basis != None:
     writecfl(os.path.join(options.save_basis, cfl_name), U)
 
 if options.build_phantom:
-    print "------------------------------------------------------------"
-    print "Building Phantom"
-    print ""
+    if options.verbose:
+        print "------------------------------------------------------------"
+        print "Building Phantom"
+        print ""
     if options.phantom_data != None:
-        print X.shape
-        print ETL
+        if options.verbose:
+            print X.shape
+            print ETL
         ksp = np.zeros((phantom_data.shape[0], phantom_data.shape[1], ETL), dtype='complex64')
-        print ksp.shape
+        if options.verbose:
+            print ksp.shape
         imgs = Phantom.ifft2c(np.transpose(phantom_data, (1, 0, 2)))
         T2im = np.zeros(phantom_data.shape[:2])
         idx = np.random.permutation(N)
@@ -321,7 +343,8 @@ if options.build_phantom:
         P = t2p.Phantom(FOV, res)
         P.knee_objects_relax(T2vals, X)
         ksp = np.fliplr(P.build_flipmod()[None, :, :, None, None, :])
-    print "------------------------------------------------------------"
+    if options.verbose:
+        print "------------------------------------------------------------"
 
     if options.save_phantom != None:
         if options.phantom_name != None:
