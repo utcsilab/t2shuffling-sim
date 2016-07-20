@@ -89,17 +89,17 @@ options, args = parser.parse_args()
 
 
 if len(argv) == 1:
-  parser.print_help()
-  exit(0)
+    parser.print_help()
+    exit(0)
 
 
 if options.print_models:
-  for key in models_dict:
-    if models_dict[key].__doc__ is not None:
-      print '\t'.join(('"%s"' % key , models_dict[key].__doc__))
-    else:
-     print '"%s"' % key
-  exit(0)
+    for key in models_dict:
+        if models_dict[key].__doc__ is not None:
+            print '\t'.join(('"%s"' % key , models_dict[key].__doc__))
+        else:
+            print '"%s"' % key
+    exit(0)
 
 
 assert (options.cfl or options.loadFSE or options.genFSE), "Please pass in a cfl file XOR an angles file XOR an FSEsim."
@@ -118,80 +118,84 @@ else:
 
 
 if options.save_imgs:
-  assert options.cfl, "In order to save images, a cfl file must be passed instead of values for a simulation."
+    assert options.cfl, "In order to save images, a cfl file must be passed instead of values for a simulation."
 
 if options.basis_name != None:
-  assert len(options.model) == 1, "In order to change the saved basis name, you must test a single model. "
+    assert len(options.model) == 1, "In order to change the saved basis name, you must test a single model. "
 
 if options.cfl:
 
-  cfl_name = options.cfl.split('.')[-1]
-  X, img_dim = sqcfl2mat(cfl2sqcfl(readcfl(options.cfl), options.e2s))
+    cfl_name = options.cfl.split('.')[-1]
+    X, img_dim = sqcfl2mat(cfl2sqcfl(readcfl(options.cfl), options.e2s))
 
 elif options.genFSE: 
 
-  assert options.angles is not None, "In order to generate FSEmatrix, you must pass in an angles file."
-  time_stamp = options.angles.split('.')[-1] 
-  try:
-    int(time_stamp)
-    time_stamp = "." + time_stamp
-  except ValueError:
-    time_stamp = "" 
-  except AssertionError:
-    time_stamp = ""
-  angles = np.loadtxt(options.angles)
-  angles = angles * np.pi/180
-  e2s = options.e2s
-  TE  = options.TE
+    assert options.angles is not None, "In order to generate FSEmatrix, you must pass in an angles file."
+    time_stamp = options.angles.split('.')[-1] 
+    try:
+        int(time_stamp)
+        time_stamp = "." + time_stamp
+    except ValueError:
+        time_stamp = "" 
+    except AssertionError:
+        time_stamp = ""
 
-  if options.phantom_data != None:
-      phantom_data = readcfl(options.phantom_data)
-      N = phantom_data.shape[2]
-  else:
-      N   = options.N
+    angles = np.loadtxt(options.angles) * np.pi / 180
+    e2s = options.e2s
+    TE  = options.TE
 
-  if options.T1vals is not None:
-      T1vals = np.array([float(T1) for T1 in options.T1vals])
-  elif options.T1vals_mat is not None:
-    T1vals = sio.loadmat(options.T1vals_mat)['T1vals']
-  else:
-    T1vals = np.array([500, 700, 1000, 1800]) * 1e-3
+    if options.phantom_data != None:
+        phantom_data = readcfl(options.phantom_data)
+        N = phantom_data.shape[2]
+    else:
+        N   = options.N
 
-  if options.T2vals is not None:
-      T2vals = np.array([float(T2) for T2 in options.T2vals])
-  elif options.T2vals_mat is not None:
-    T2vals = sio.loadmat(options.T2vals_mat)['T2vals']
-  else:
-    T2vals = np.linspace(20e-3, 800e-3, N)
+    if options.T1vals is not None:
+        T1vals = np.array([float(T1) for T1 in options.T1vals])
+    elif options.T1vals_mat is not None:
+        T1vals = sio.loadmat(options.T1vals_mat)['T1vals']
+    else:
+        T1vals = np.array([500, 700, 1000, 1800]) * 1e-3
 
-  if T2vals.shape[0] > N:
-    idx = np.random.permutation(T2vals.shape[0])
-    T2vals = T2vals[idx[0:N]]
+    if options.T2vals is not None:
+        T2vals = np.array([float(T2) for T2 in options.T2vals])
+    elif options.T2vals_mat is not None:
+        T2vals = sio.loadmat(options.T2vals_mat)['T2vals']
+    else:
+        T2vals = np.linspace(20e-3, 800e-3, N)
 
-  T = len(angles)
-  N = len(T2vals)
-  if not options.ETL:
-    ETL = T - e2s - 1
-  else:
-    ETL = options.ETL
-  T1vals = np.sort(np.ravel(T1vals))
-  T2vals = np.sort(np.ravel(T2vals))
-  X = gen_FSEmatrix(N, angles, ETL, e2s, TE, T1vals, T2vals)
-  if options.saveFSE != None:
-    print "Saving as " + options.saveFSE + time_stamp
-    sio.savemat(options.saveFSE + time_stamp, {"X": X, "angles": angles, "N": N, "ETL":ETL, "e2s":e2s, "TE": TE, "T1vals":T1vals, "T2vals":T2vals})
+    if T2vals.shape[0] > N:
+        idx = np.random.permutation(T2vals.shape[0])
+        T2vals = T2vals[idx[0:N]]
+
+    T = len(angles)
+    N = len(T2vals)
+    R = len(TRvals)
+    
+    if not options.ETL:
+        ETL = T - e2s - 1
+    else:
+        ETL = options.ETL
+
+    T1vals = np.sort(np.ravel(T1vals))
+    T2vals = np.sort(np.ravel(T2vals))
+
+    X = gen_FSEmatrix(N, angles, ETL, e2s, TE, T1vals, T2vals)
+
+    if options.saveFSE != None:
+        print "Saving as " + options.saveFSE + time_stamp
+        sio.savemat(options.saveFSE + time_stamp, {"X": X, "angles": angles, "N": N, "ETL":ETL, "e2s":e2s, "TE": TE, "T1vals":T1vals, "T2vals":T2vals})
 
 else:
-
-  dct = sio.loadmat(options.loadFSE)
-  X = dct["X"]
-  angles = dct["angles"]
-  N = dct["N"]
-  ETL = dct["ETL"]
-  e2s = dct["e2s"]
-  TE = dct["TE"]
-  T1vals = np.sort(np.ravel(dct["T1vals"]))
-  T2vals = np.sort(np.ravel(dct["T2vals"]))
+    dct = sio.loadmat(options.loadFSE)
+    X = dct["X"]
+    angles = dct["angles"]
+    N = dct["N"]
+    ETL = dct["ETL"]
+    e2s = dct["e2s"]
+    TE = dct["TE"]
+    T1vals = np.sort(np.ravel(dct["T1vals"]))
+    T2vals = np.sort(np.ravel(dct["T2vals"]))
 
 
 if rvc == 'real':
@@ -204,38 +208,38 @@ elif rvc == 'abs':
 
 lst = options.model
 if options.add_control:
-  lst.append('simple_svd')
+    lst.append('simple_svd')
 if options.model == 'all':
-  lst = models.keys()
+    lst = models.keys()
 results = {}
 for m in lst:
-  print "------------------------------------------------------------"
-  print "Running " + m
-  print "------------------------------------------------------------"
-  model = models_dict[m]
-  k = options.k
-  U, alpha, X_hat = model(X, options.k, rvc)
-  print "Results:"
-  signal_perc_err, TE_perc_err, fro_perc_err = get_metric(X, X_hat)
-  if not k:
-    k = U.shape[1]
-  results[m] = {'U':U, 'alpha':alpha, 'k':k, 'X_hat': X_hat, 'Percentage Error per Signal': signal_perc_err, 'Percentage Error per TE': TE_perc_err, 'Frobenius Percentage Error': fro_perc_err}
+    print "------------------------------------------------------------"
+    print "Running " + m
+    print "------------------------------------------------------------"
+    model = models_dict[m]
+    k = options.k
+    U, alpha, X_hat = model(X, options.k, rvc)
+    print "Results:"
+    signal_perc_err, TE_perc_err, fro_perc_err = get_metric(X, X_hat)
+    if not k:
+        k = U.shape[1]
+    results[m] = {'U':U, 'alpha':alpha, 'k':k, 'X_hat': X_hat, 'Percentage Error per Signal': signal_perc_err, 'Percentage Error per TE': TE_perc_err, 'Frobenius Percentage Error': fro_perc_err}
 print "------------------------------------------------------------"
 
 
 if options.save_plots != None:
-  for m in lst:
-    mod = results[m]
-    if options.cfl:
-      plot_cfl_signals(mod['U'], options.k, X, mod['X_hat'], "cfl_" + m, options.e2s, options.save_plots)
-    else:
-      plot_simulation(mod['U'], options.k, X, mod['X_hat'], "sim_" + m, T1vals, T2vals, e2s, options.save_plots)
+    for m in lst:
+        mod = results[m]
+        if options.cfl:
+            plot_cfl_signals(mod['U'], options.k, X, mod['X_hat'], "cfl_" + m, options.e2s, options.save_plots)
+        else:
+            plot_simulation(mod['U'], options.k, X, mod['X_hat'], "sim_" + m, T1vals, T2vals, e2s, options.save_plots)
 
 
 if options.save_imgs != None:
-  # TODO
-  warn('TODO: implement options.save_imgs')
-  None
+    # TODO
+    warn('TODO: implement options.save_imgs')
+    None
 
 
 if options.contrast_synthesis:
@@ -272,23 +276,23 @@ if options.contrast_synthesis:
 
 
 if options.save_basis != None:
-  print options.basis_name
+    print options.basis_name
 
-  for m in results.keys():
-    U = results[m]["U"]
-    k = results[m]['k']
-    if U.shape[1] < U.shape[0]:
-      U = np.hstack((U, np.zeros((U.shape[0], U.shape[0] - k))))
+    for m in results.keys():
+        U = results[m]["U"]
+        k = results[m]['k']
+        if U.shape[1] < U.shape[0]:
+            U = np.hstack((U, np.zeros((U.shape[0], U.shape[0] - k))))
 
     for i in range(5):
-      U = np.expand_dims(U, axis=0)
+        U = np.expand_dims(U, axis=0)
 
     k_ext = '_k_%d' % k
 
     if options.basis_name != None:
-      cfl_name = options.basis_name  
+        cfl_name = options.basis_name  
     else:
-      cfl_name = 'bas.' + m + k_ext + timestamp
+        cfl_name = 'bas.' + m + k_ext + timestamp
 
     writecfl(os.path.join(options.save_basis, cfl_name), U)
 
