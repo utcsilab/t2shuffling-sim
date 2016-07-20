@@ -7,8 +7,9 @@ Tools for simulating spin-echo trains and computing temporal subspaces.
 ```
 
 ## Other things you can do
-. Make a realistic analytical contrast phantom (in image space)
-. Compute a contrast synthesis matrix for the subspace
+- Make a realistic analytical contrast phantom (in image space)
+- Compute a contrast synthesis matrix for the subspace
+- Simulate multiple TRs, driven equilibrium recovery
 
 # Contributing
 Contributing is encouraged. Please do not directly commit to `master`. Instead, create and push a branch, and open a

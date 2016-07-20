@@ -106,7 +106,7 @@ def FSE_signal(angles_rad, TE, T1, T2):
         T2 = T2 value in seconds
 
     OUTPUT:
-        Complex signal value at each echo time
+        Transverse (complex) magnetization value at each echo time
         
     """
 
@@ -139,8 +139,8 @@ def FSE_signal2(angles_rad, TE, T1, T2):
         T2 = T2 value in seconds
 
     OUTPUT:
-        S1 -- Complex signal value at each echo time
-        S2 -- Transverse magnetization at each echo time
+        S1 -- Transverse (complex) magnetization value at each echo time
+        S2 -- Longitudinal magnetization at each echo time
 
     """
 
@@ -161,7 +161,7 @@ def FSE_signal2(angles_rad, TE, T1, T2):
         P = epg_grad(P)
 
         S[i] = P[0,0]
-        S2[i] = P[0,2]
+        S2[i] = P[2,0]
 
     return S, S2
     
