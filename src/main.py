@@ -166,7 +166,8 @@ elif options.genFSE:
     elif options.T2vals_mat is not None:
         T2vals = sio.loadmat(options.T2vals_mat)['T2vals']
     else:
-        T2vals = np.linspace(20e-3, 800e-3, N)
+        T2vals = np.linspace(20e-3, 2000e-3, N)
+
     if options.TRvals is not None:
         TRvals = np.array([float(TR) for TR in options.TRvals])
     elif options.TRvals_mat is not None:
