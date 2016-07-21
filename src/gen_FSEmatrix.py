@@ -62,5 +62,4 @@ def gen_FSEmatrix(angles_rad, ETL, e2s, TE, T1vals, T2vals, TRvals=np.array([np.
         print ""
 
     keep = range(e2s, e2s + ETL)
-    X = Xfull[keep, :, :, :]
-    return X.reshape((-1, num_iter))
+    return Xfull[keep, :, :, :]

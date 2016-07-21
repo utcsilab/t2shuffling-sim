@@ -60,6 +60,7 @@ parser.add_option("--T1vals", dest="T1vals_mat", type=str, default=None, help="L
 parser.add_option("--T2vals", dest="T2vals_mat", type=str, default=None, help="Load T2 values from .mat file with variable 'T2vals'")
 parser.add_option("--TRvals", dest="TRvals_mat", type=str, default=None, help="Load TR values from .mat file with variable 'TRvals'")
 parser.add_option("--driveq", dest="driven_equil", action="store_true", default=False, help="Simulate driven equilibrium")
+parser.add_option("--varTR", dest="varTR", action="store_true", default=False, help="Variable TR: concatenate the TR curves to form a joint subspace")
 
 # contrast synthesis
 parser.add_option("--contrast_synthesis", dest="contrast_synthesis", action="store_true", default=False, help="Generate contrast synthesis matrix")
@@ -166,6 +167,12 @@ elif options.genFSE:
         T2vals = sio.loadmat(options.T2vals_mat)['T2vals']
     else:
         T2vals = np.linspace(20e-3, 800e-3, N)
+    if options.TRvals is not None:
+        TRvals = np.array([float(TR) for TR in options.TRvals])
+    elif options.TRvals_mat is not None:
+        TRvals = sio.loadmat(options.TRvals_mat)['TRvals']
+    else:
+        TRvals = np.array([np.inf])
 
     if options.TRvals is not None:
         TRvals = np.array([float(TR) for TR in options.TRvals])
@@ -232,6 +239,13 @@ for m in lst:
         print "------------------------------------------------------------"
     model = models_dict[m]
     k = options.k
+    if options.varTR:
+        X = np.transpose(X, (3, 0, 1, 2)).reshape((ETL * TRvals.size, -1))
+    else:
+        X = X.reshape((ETL, -1))
+
+    X = X[:, ~np.all(X == 0, axis=0)] # remove all-zero signals, for cases where T2 > T1
+
     U, alpha, X_hat = model(X, options.k, rvc)
     if options.verbose:
         print "Results:"
@@ -264,7 +278,10 @@ if options.contrast_synthesis:
         print "Computing contrast synthesis matrix"
         print ""
 
-    Xe = gen_FSEmatrix(N, np.pi * np.ones(T), ETL, e2s, TE, T1vals, T2vals)
+    Xe = gen_FSEmatrix(N, np.pi * np.ones(T), ETL, e2s, TE, T1vals, T2vals).reshape((ETL, -1))
+    Xe = Xe[:, ~np.all(Xe == 0, axis=0)] # remove all-zero signals, for cases where T2 > T1
+
+    assert (not options.varTR), "Variable TR mode not implemented for contrast synthesis!"
 
     for m in results.keys():
         k = results[m]['k']
