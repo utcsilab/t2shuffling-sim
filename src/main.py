@@ -203,7 +203,7 @@ elif options.genFSE:
     if options.saveFSE != None:
         if options.verbose:
             print "Saving as " + options.saveFSE + time_stamp
-        sio.savemat(options.saveFSE + time_stamp, {"X": X, "angles": angles, "N": N, "ETL":ETL, "e2s":e2s, "TE": TE, "T1vals":T1vals, "T2vals":T2vals})
+        sio.savemat(options.saveFSE + time_stamp, {"X": X, "angles": angles, "N": N, "ETL": ETL, "e2s": e2s, "TE": TE, "T1vals": T1vals, "T2vals": T2vals, "TRvals": TRvals})
 
 else:
     dct = sio.loadmat(options.loadFSE)
@@ -253,7 +253,7 @@ for m in lst:
     signal_perc_err, TE_perc_err, fro_perc_err = get_metric(X, X_hat, options.verbose)
     if not k:
         k = U.shape[1]
-    results[m] = {'U':U, 'alpha':alpha, 'k':k, 'X_hat': X_hat, 'Percentage Error per Signal': signal_perc_err, 'Percentage Error per TE': TE_perc_err, 'Frobenius Percentage Error': fro_perc_err}
+    results[m] = {'U': U, 'alpha': alpha, 'k': k, 'X_hat': X_hat, 'Percentage Error per Signal': signal_perc_err, 'Percentage Error per TE': TE_perc_err, 'Frobenius Percentage Error': fro_perc_err}
 if options.verbose:
     print "------------------------------------------------------------"
 
