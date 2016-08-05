@@ -59,6 +59,7 @@ parser.add_option("--TR", dest="TRvals", action="append", help="Specify single T
 parser.add_option("--T1vals", dest="T1vals_mat", type=str, default=None, help="Load T1 values from .mat file with variable 'T1vals'")
 parser.add_option("--T2vals", dest="T2vals_mat", type=str, default=None, help="Load T2 values from .mat file with variable 'T2vals'")
 parser.add_option("--TRvals", dest="TRvals_mat", type=str, default=None, help="Load TR values from .mat file with variable 'TRvals'")
+parser.add_option("--TRvals_file", dest="TRvals_file", type=str, default=None, help="Load TR values from text file")
 parser.add_option("--driveq", dest="driven_equil", action="store_true", default=False, help="Simulate driven equilibrium")
 parser.add_option("--varTR", dest="varTR", action="store_true", default=False, help="Variable TR: concatenate the TR curves to form a joint subspace")
 
@@ -159,7 +160,7 @@ elif options.genFSE:
     elif options.T1vals_mat is not None:
         T1vals = sio.loadmat(options.T1vals_mat)['T1vals']
     else:
-        T1vals = np.array([500, 700, 1000, 1800]) * 1e-3
+        T1vals = np.array([500, 550, 600, 650, 700, 1000, 1800, 2000]) * 1e-3
 
     if options.T2vals is not None:
         T2vals = np.array([float(T2) for T2 in options.T2vals])
@@ -172,13 +173,10 @@ elif options.genFSE:
         TRvals = np.array([float(TR) for TR in options.TRvals])
     elif options.TRvals_mat is not None:
         TRvals = sio.loadmat(options.TRvals_mat)['TRvals']
-    else:
-        TRvals = np.array([np.inf])
-
-    if options.TRvals is not None:
-        TRvals = np.array([float(TR) for TR in options.TRvals])
-    elif options.TRvals_mat is not None:
-        TRvals = sio.loadmat(options.TRvals_mat)['TRvals']
+    elif options.TRvals_file is not None:
+        f = open(options.TRvals_file, 'r')
+        TRvals = np.array([float(line) for line in f.readlines()]) * 1e-6 # raw units are in us
+        f.close()
     else:
         TRvals = np.array([np.inf])
 
