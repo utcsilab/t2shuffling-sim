@@ -6,7 +6,7 @@ from os                   import system
 from models               import models_dict
 from cfl                  import readcfl, writecfl, cfl2sqcfl, sqcfl2mat, mat2sqcfl
 from metrics              import get_metric
-from gen_FSEmatrix        import gen_FSEmatrix
+from gen_FSEmatrix        import gen_FSEmatrix, gen_FSET1T2matrix
 from sys                  import argv, exit
 from warnings             import warn
 import os.path
@@ -58,6 +58,7 @@ parser.add_option("--T2", dest="T2vals", action="append", help="Specify single T
 parser.add_option("--TR", dest="TRvals", action="append", help="Specify single TR value")
 parser.add_option("--T1vals", dest="T1vals_mat", type=str, default=None, help="Load T1 values from .mat file with variable 'T1vals'")
 parser.add_option("--T2vals", dest="T2vals_mat", type=str, default=None, help="Load T2 values from .mat file with variable 'T2vals'")
+parser.add_option("--T1T2vals", dest="T1T2vals_mat", type=str, default=None, help="Load T1/T2 value pairs from .mat file with variable 'T1T2vals'")
 parser.add_option("--TRvals", dest="TRvals_mat", type=str, default=None, help="Load TR values from .mat file with variable 'TRvals'")
 parser.add_option("--TRvals_file", dest="TRvals_file", type=str, default=None, help="Load TR values from text file")
 parser.add_option("--driveq", dest="driven_equil", action="store_true", default=False, help="Simulate driven equilibrium")
@@ -155,19 +156,25 @@ elif options.genFSE:
     else:
         N   = options.N
 
-    if options.T1vals is not None:
-        T1vals = np.array([float(T1) for T1 in options.T1vals])
-    elif options.T1vals_mat is not None:
-        T1vals = sio.loadmat(options.T1vals_mat)['T1vals']
+    if options.T1T2vals_mat is not None:
+        # keep the T1T2vals as pairs
+        T1T2_mode = True
+        T1T2vals = sio.loadmat(options.T1T2vals_mat)['T1T2vals']
     else:
-        T1vals = np.array([500, 550, 600, 650, 700, 1000, 1800, 2000]) * 1e-3
+        T1T2_mode = False
+        if options.T1vals is not None:
+            T1vals = np.array([float(T1) for T1 in options.T1vals])
+        elif options.T1vals_mat is not None:
+            T1vals = sio.loadmat(options.T1vals_mat)['T1vals']
+        else:
+            T1vals = np.array([500, 550, 600, 650, 700, 1000, 1800, 2000]) * 1e-3
 
-    if options.T2vals is not None:
-        T2vals = np.array([float(T2) for T2 in options.T2vals])
-    elif options.T2vals_mat is not None:
-        T2vals = sio.loadmat(options.T2vals_mat)['T2vals']
-    else:
-        T2vals = np.linspace(20e-3, 2000e-3, N)
+        if options.T2vals is not None:
+            T2vals = np.array([float(T2) for T2 in options.T2vals])
+        elif options.T2vals_mat is not None:
+            T2vals = sio.loadmat(options.T2vals_mat)['T2vals']
+        else:
+            T2vals = np.linspace(20e-3, 2000e-3, N)
 
     if options.TRvals is not None:
         TRvals = np.array([float(TR) for TR in options.TRvals])
@@ -180,12 +187,20 @@ elif options.genFSE:
     else:
         TRvals = np.array([np.inf])
 
-    if T2vals.shape[0] > N:
-        idx = np.random.permutation(T2vals.shape[0])
-        T2vals = T2vals[idx[0:N]]
+    if T1T2_mode:
+        if T1T2vals.shape[0] > N:
+            idx = np.random.permutation(T1T2vals.shape[0])
+            T1T2vals = T1T2vals[idx[0:N],:]
+        N = T1T2vals.shape[0]
+    else:
+        if T2vals.shape[0] > N:
+            idx = np.random.permutation(T2vals.shape[0])
+            T2vals = T2vals[idx[0:N]]
+        N = len(T2vals)
+        T1vals = np.sort(np.ravel(T1vals))
+        T2vals = np.sort(np.ravel(T2vals))
 
     T = len(angles)
-    N = len(T2vals)
     R = len(TRvals)
     
     if not options.ETL:
@@ -193,10 +208,10 @@ elif options.genFSE:
     else:
         ETL = options.ETL
 
-    T1vals = np.sort(np.ravel(T1vals))
-    T2vals = np.sort(np.ravel(T2vals))
-
-    X = gen_FSEmatrix(angles, ETL, e2s, TE, T1vals, T2vals, TRvals, options.driven_equil, options.verbose)
+    if T1T2_mode:
+        X = gen_FSET1T2matrix(angles, ETL, e2s, TE, T1T2vals, TRvals, options.driven_equil, options.verbose)
+    else:
+        X = gen_FSEmatrix(angles, ETL, e2s, TE, T1vals, T2vals, TRvals, options.driven_equil, options.verbose)
 
     if options.saveFSE != None:
         if options.verbose:
