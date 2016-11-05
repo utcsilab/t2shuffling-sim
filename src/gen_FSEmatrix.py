@@ -45,9 +45,9 @@ def gen_FSEmatrix(angles_rad, ETL, e2s, TE, T1vals, T2vals, TRvals=np.array([np.
                     E1 = np.exp(-(TR - T*TE) / T1)
 
                     if driven_equil:
-                        M0 = (1 - E1) * (1 - E1 * abs(x[-1]))
+                        M0 = (1 - E1) / (1 - E1 * abs(x[-1]))
                     else:
-                        M0 = (1 - E1) * (1 - E1 * abs(z[-1]))
+                        M0 = (1 - E1) / (1 - E1 * abs(z[-1]))
 
                     Xfull[:, i1, i2, i3] = x.ravel() * M0
             else:
@@ -96,9 +96,9 @@ def gen_FSET1T2matrix(angles_rad, ETL, e2s, TE, T1T2vals, TRvals=np.array([np.in
                 E1 = np.exp(-(TR - T*TE) / T1)
 
                 if driven_equil:
-                    M0 = (1 - E1) * (1 - E1 * abs(x[-1]))
+                    M0 = (1 - E1) / (1 - E1 * abs(x[-1]))
                 else:
-                    M0 = (1 - E1) * (1 - E1 * abs(z[-1]))
+                    M0 = (1 - E1) / (1 - E1 * abs(z[-1]))
 
                 Xfull[:, i0, i1] = x.ravel() * M0
         else:
