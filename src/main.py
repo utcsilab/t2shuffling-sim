@@ -61,6 +61,7 @@ parser.add_option("--T2vals", dest="T2vals_mat", type=str, default=None, help="L
 parser.add_option("--T1T2vals", dest="T1T2vals_mat", type=str, default=None, help="Load T1/T2 value pairs from .mat file with variable 'T1T2vals'")
 parser.add_option("--TRvals", dest="TRvals_mat", type=str, default=None, help="Load TR values from .mat file with variable 'TRvals'")
 parser.add_option("--TRvals_file", dest="TRvals_file", type=str, default=None, help="Load TR values from text file")
+parser.add_option("--scan_deadtime_vals_file", dest="scan_deadtime_vals_file", type=str, default=None, help="Load scan deadtime values from text file")
 parser.add_option("--driveq", dest="driven_equil", action="store_true", default=False, help="Simulate driven equilibrium")
 parser.add_option("--varTR", dest="varTR", action="store_true", default=False, help="Variable TR: concatenate the TR curves to form a joint subspace")
 
@@ -176,7 +177,13 @@ elif options.genFSE:
         else:
             T2vals = np.linspace(20e-3, 2000e-3, N)
 
-    if options.TRvals is not None:
+    if options.scan_deadtime_vals_file is not None:
+        # convert scan_deadtime to TR
+        f = open(options.scan_deadtime_vals_file, 'r')
+        scan_deadtime_vals = np.array([float(line) for line in f.readlines()]) * 1e-6 # raw units are in us
+        f.close()
+        TRvals = scan_deadtime_vals + len(angles) * TE
+    elif options.TRvals is not None:
         TRvals = np.array([float(TR) for TR in options.TRvals])
     elif options.TRvals_mat is not None:
         TRvals = sio.loadmat(options.TRvals_mat)['TRvals']
@@ -186,6 +193,9 @@ elif options.genFSE:
         f.close()
     else:
         TRvals = np.array([np.inf])
+
+    print 'TRvals:'
+    print TRvals
 
     if T1T2_mode:
         if T1T2vals.shape[0] > N:
@@ -254,7 +264,11 @@ for m in lst:
     model = models_dict[m]
     k = options.k
     if options.varTR:
-        X = np.transpose(X, (3, 0, 1, 2)).reshape((ETL * TRvals.size, -1))
+        print X.shape
+        if T1T2_mode:
+            X = np.transpose(X, (2, 0, 1)).reshape((ETL * TRvals.size, -1))
+        else:
+            X = np.transpose(X, (3, 0, 1, 2)).reshape((ETL * TRvals.size, -1))
     else:
         X = X.reshape((ETL, -1))
 
