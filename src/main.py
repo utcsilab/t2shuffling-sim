@@ -226,7 +226,10 @@ elif options.genFSE:
     if options.saveFSE != None:
         if options.verbose:
             print "Saving as " + options.saveFSE + time_stamp
-        sio.savemat(options.saveFSE + time_stamp, {"X": X, "angles": angles, "N": N, "ETL": ETL, "e2s": e2s, "TE": TE, "T1vals": T1vals, "T2vals": T2vals, "TRvals": TRvals})
+        if T1T2_mode:
+            sio.savemat(options.saveFSE + time_stamp, {"X": X, "angles": angles, "N": N, "ETL": ETL, "e2s": e2s, "TE": TE, "T1T2vals": T1T2vals, "TRvals": TRvals})
+        else:
+            sio.savemat(options.saveFSE + time_stamp, {"X": X, "angles": angles, "N": N, "ETL": ETL, "e2s": e2s, "TE": TE, "T1vals": T1vals, "T2vals": T2vals, "TRvals": TRvals})
 
 else:
     dct = sio.loadmat(options.loadFSE)
@@ -236,8 +239,11 @@ else:
     ETL = dct["ETL"]
     e2s = dct["e2s"]
     TE = dct["TE"]
-    T1vals = np.sort(np.ravel(dct["T1vals"]))
-    T2vals = np.sort(np.ravel(dct["T2vals"]))
+    if T1T2_mode:
+        T1T1vals = np.sort(np.ravel(dct["T1T2vals"]))
+    else:
+        T1vals = np.sort(np.ravel(dct["T1vals"]))
+        T2vals = np.sort(np.ravel(dct["T2vals"]))
 
 
 if rvc == 'real':
@@ -264,11 +270,7 @@ for m in lst:
     model = models_dict[m]
     k = options.k
     if options.varTR:
-        print X.shape
-        if T1T2_mode:
-            X = np.transpose(X, (2, 0, 1)).reshape((ETL * TRvals.size, -1))
-        else:
-            X = np.transpose(X, (3, 0, 1, 2)).reshape((ETL * TRvals.size, -1))
+        X = np.transpose(X, (2, 0, 1)).reshape((ETL * TRvals.size, -1))
     else:
         X = X.reshape((ETL, -1))
 
