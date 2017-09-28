@@ -93,9 +93,13 @@ parser.add_option("--set_phantom_name", dest="phantom_name", type=str, default=N
 parser.add_option("--set_t2map_name", dest="t2map_name", type=str, default=None, help="Pass this to change saved t2 map name")
 
 parser.add_option("--save_basis", dest="save_basis", type=str, default=None, help="Pass in path to FOLDER to save basis.")
+parser.add_option("--set_basis_name", dest="basis_name", type=str, default=None, help="Pass this to change saved basis name. USE ONLY IF TESTING 1 MODEL.")
+
+parser.add_option("--save_scales", dest="save_scales", type=str, default=None, help="Pass in path to FOLDER to save coefficient scaling.")
+parser.add_option("--set_scale_name", dest="scale_name", type=str, default=None, help="Pass this to change saved scaling name. USE ONLY IF TESTING 1 MODEL.")
+
 parser.add_option("--save_plots", dest="save_plots", type=str, default=None, help="Pass in path to FOLDER to save plots.")
 parser.add_option("--save_imgs", dest="save_imgs", type=str, default=None, help="Pass in path to FOLDER to save images.")
-parser.add_option("--set_basis_name", dest="basis_name", type=str, default=None, help="Pass this to change saved basis name. USE ONLY IF TESTING 1 MODEL.")
 
 
 
@@ -288,13 +292,14 @@ for m in lst:
 
     X = X[:, ~np.all(X == 0, axis=0)] # remove all-zero signals, for cases where T2 > T1
 
-    U, alpha, X_hat = model(X, options.k, rvc)
+    U, alpha, X_hat, S = model(X, options.k, rvc)
+
     if options.verbose:
         print "Results:"
     signal_perc_err, TE_perc_err, fro_perc_err = get_metric(X, X_hat, options.verbose)
     if not k:
         k = U.shape[1]
-    results[m] = {'U': U, 'alpha': alpha, 'k': k, 'X_hat': X_hat, 'Percentage Error per Signal': signal_perc_err, 'Percentage Error per TE': TE_perc_err, 'Frobenius Percentage Error': fro_perc_err}
+    results[m] = {'U': U, 'alpha': alpha, 'k': k, 'X_hat': X_hat, 'Percentage Error per Signal': signal_perc_err, 'Percentage Error per TE': TE_perc_err, 'Frobenius Percentage Error': fro_perc_err, 'S': S}
 if options.verbose:
     print "------------------------------------------------------------"
 
@@ -372,6 +377,21 @@ if options.save_basis != None:
         cfl_name = 'bas.' + m + k_ext + timestamp
 
     writecfl(os.path.join(options.save_basis, cfl_name), U)
+
+if options.save_scales != None:
+    if options.verbose:
+        print options.scale_name
+
+    for m in results.keys():
+        S = results[m]["S"]
+
+    if options.basis_name != None:
+        cfl_name = options.scale_name  
+    else:
+        cfl_name = 'scale.' + m + timestamp
+
+    sc = (S/S[0]).reshape((1, 1, 1, 1, 1, 1, len(S)))
+    writecfl(os.path.join(options.save_scales, cfl_name), sc)
 
 if options.build_phantom:
     if options.verbose:
