@@ -6,10 +6,16 @@ from os                   import system
 from models               import models_dict
 from cfl                  import readcfl, writecfl, cfl2sqcfl, sqcfl2mat, mat2sqcfl
 from metrics              import get_metric
-from gen_FSEmatrix        import gen_FSEmatrix, gen_FSET1T2matrix
+from gen_FSEmatrix        import gen_FSET1T2matrix
 from sys                  import argv, exit
 from warnings             import warn
 import os.path
+
+try:
+    import joblib
+    use_joblib = True
+except ImportError:
+    use_joblib = False
 
 import imp
 import t2phantom as t2p
@@ -64,6 +70,7 @@ parser.add_option("--TRvals_file", dest="TRvals_file", type=str, default=None, h
 parser.add_option("--scan_deadtime_vals_file", dest="scan_deadtime_vals_file", type=str, default=None, help="Load scan deadtime values from text file")
 parser.add_option("--driveq", dest="driven_equil", action="store_true", default=False, help="Simulate driven equilibrium")
 parser.add_option("--varTR", dest="varTR", action="store_true", default=False, help="Variable TR: concatenate the TR curves to form a joint subspace")
+parser.add_option("--par_jobs", dest="par_jobs", type=int, default=1, help="Run par_jobs in parallel")
 
 # contrast synthesis
 parser.add_option("--contrast_synthesis", dest="contrast_synthesis", action="store_true", default=False, help="Generate contrast synthesis matrix")
@@ -218,10 +225,15 @@ elif options.genFSE:
     else:
         ETL = options.ETL
 
-    if T1T2_mode:
-        X = gen_FSET1T2matrix(angles, ETL, e2s, TE, T1T2vals, TRvals, options.driven_equil, options.verbose)
-    else:
-        X = gen_FSEmatrix(angles, ETL, e2s, TE, T1vals, T2vals, TRvals, options.driven_equil, options.verbose)
+    if not T1T2_mode:
+        _T1vals, _T2vals = np.meshgrid(T1vals.ravel(), T2vals.ravel())
+        T1T2vals = np.vstack((_T1vals.ravel(), _T2vals.ravel())).T
+        T1T2_mode = True
+
+    if not use_joblib:
+        options.par_jobs = 1
+
+    X = gen_FSET1T2matrix(angles, ETL, e2s, TE, T1T2vals, TRvals, options.driven_equil, options.verbose, options.par_jobs)
 
     if options.saveFSE != None:
         if options.verbose:
