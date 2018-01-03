@@ -1,12 +1,15 @@
 from __future__ import division
 import os
 
-try:
-    from scipy.optimize import fmin
-    from regressors import Multilayer_Regressor as mr
-    import theanets
-except ImportError:
-    pass
+IMPORT_ALL = False
+
+if IMPORT_ALL:
+    try:
+        from scipy.optimize import fmin
+        from regressors import Multilayer_Regressor as mr
+        import theanets
+    except ImportError:
+        pass
 
 
 import numpy as np

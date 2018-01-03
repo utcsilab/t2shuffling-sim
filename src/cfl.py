@@ -7,13 +7,15 @@
 # 2015 Jonathan Tamir <jtamir@eecs.berkeley.edu>
 
 
+IMPORT_ALL = False
 import numpy as np
 
-try:
-	import matplotlib.pyplot as plt
-	from matplotlib.cm import Greys_r
-except ImportError:
-	pass
+if IMPORT_ALL:
+    try:
+        import matplotlib.pyplot as plt
+        from matplotlib.cm import Greys_r
+    except ImportError:
+        pass
 
 
 def readcfl(name):
