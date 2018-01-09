@@ -69,6 +69,7 @@ parser.add_option("--TRvals", dest="TRvals_mat", type=str, default=None, help="L
 parser.add_option("--TRvals_file", dest="TRvals_file", type=str, default=None, help="Load TR values from text file")
 parser.add_option("--scan_deadtime_vals_file", dest="scan_deadtime_vals_file", type=str, default=None, help="Load scan deadtime values from text file")
 parser.add_option("--driveq", dest="driven_equil", action="store_true", default=False, help="Simulate driven equilibrium")
+parser.add_option("--fr_sign", dest="fr_sign", type=int, default=0., help="Sign of fast recovery flip angle for driven equilibrium: 0 for -1, 1 for 1 (default: 0 == -1)")
 parser.add_option("--varTR", dest="varTR", action="store_true", default=False, help="Variable TR: concatenate the TR curves to form a joint subspace")
 parser.add_option("--par_jobs", dest="par_jobs", type=int, default=1, help="Run par_jobs in parallel")
 
@@ -237,7 +238,12 @@ elif options.genFSE:
     if not use_joblib:
         options.par_jobs = 1
 
-    X = gen_FSET1T2matrix(angles, ETL, e2s, TE, T1T2vals, TRvals, options.driven_equil, options.verbose, options.par_jobs)
+    if options.fr_sign == 0:
+        fr_sign = -1
+    else:
+        fr_sign = 1
+
+    X = gen_FSET1T2matrix(angles, ETL, e2s, TE, T1T2vals, TRvals, options.driven_equil, fr_sign, options.verbose, options.par_jobs)
 
     if options.saveFSE != None:
         if options.verbose:

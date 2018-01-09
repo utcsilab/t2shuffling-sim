@@ -17,7 +17,7 @@ def FSE_exp_signal(T, TE, T2):
 
 def my_FSE_T1T2_fun(args, vars):
 
-    angles_rad, TE, TRvals, driven_equil, disp = args
+    angles_rad, TE, TRvals, driven_equil, fr_sign, disp = args
     T1, T2 = vars
 
     T = len(angles_rad)
@@ -40,7 +40,7 @@ def my_FSE_T1T2_fun(args, vars):
             E1 = np.exp(-(TR - T*TE) / T1)
 
             if driven_equil:
-                M0 = (1 - E1) / (1 - E1 * abs(x[-1]))
+                M0 = (1 - E1) / (1 + fr_sign *  E1 * abs(x[-1]))
             else:
                 M0 = (1 - E1) / (1 - E1 * abs(z[-1]))
 
@@ -48,20 +48,20 @@ def my_FSE_T1T2_fun(args, vars):
 
     return x_full
 
-def gen_FSEmatrix(angles_rad, ETL, e2s, TE, T1vals, T2vals, TRvals=np.array([np.inf]), driven_equil=False, disp=True, par_jobs=8):
+def gen_FSEmatrix(angles_rad, ETL, e2s, TE, T1vals, T2vals, TRvals=np.array([np.inf]), driven_equil=False, fr_sign=-1, disp=True, par_jobs=8):
 
     _T1vals, _T2vals = np.meshgrid(T1vals.ravel(), T2vals.ravel())
     T1T2vals = np.vstack((_T1vals.ravel(), _T2vals.ravel())).T
 
-    return gen_FSET1T2matrix(angles_rad, ETL, e2s, TE, T1T2vals, TRvals, driven_equil, disp, par_jobs)
+    return gen_FSET1T2matrix(angles_rad, ETL, e2s, TE, T1T2vals, TRvals, driven_equil, fr_sign, disp, par_jobs)
 
 
-def gen_FSET1T2matrix(angles_rad, ETL, e2s, TE, T1T2vals, TRvals=np.array([np.inf]), driven_equil=False, disp=True, par_jobs=8):
+def gen_FSET1T2matrix(angles_rad, ETL, e2s, TE, T1T2vals, TRvals=np.array([np.inf]), driven_equil=False, fr_sign=-1, disp=True, par_jobs=8):
 
     if disp:
         print "Generating FSE matrix"
 
-    args = (angles_rad, TE, TRvals, driven_equil, disp)
+    args = (angles_rad, TE, TRvals, driven_equil, fr_sign, disp)
 
     L = T1T2vals.shape[0]
 
