@@ -37,11 +37,11 @@ def my_FSE_T1T2_fun(args, vars):
 
         for i3, TR in enumerate(TRvals):
 
-            E1 = np.exp(-(TR - T*TE) / T1)
-
             if driven_equil:
+                E1 = np.exp(-(TR - (T+1)*TE) / T1)
                 M0 = (1 - E1) / (1 + fr_sign *  E1 * abs(x[-1]))
             else:
+                E1 = np.exp(-(TR - T*TE) / T1)
                 M0 = (1 - E1) / (1 - E1 * abs(z[-1]))
 
             x_full[:, i3] = x.ravel() * M0
