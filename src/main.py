@@ -99,6 +99,9 @@ parser.add_option("--set_basis_name", dest="basis_name", type=str, default=None,
 parser.add_option("--save_scales", dest="save_scales", type=str, default=None, help="Pass in path to FOLDER to save coefficient scaling.")
 parser.add_option("--set_scale_name", dest="scale_name", type=str, default=None, help="Pass this to change saved scaling name. USE ONLY IF TESTING 1 MODEL.")
 
+parser.add_option("--save_sim", dest="save_sim", type=str, default=None, help="Pass in path to FOLDER to save EPG simulations.")
+parser.add_option("--set_sim_name", dest="sim_name", type=str, default=None, help="Pass this to change saved EPG sim name.")
+
 parser.add_option("--save_plots", dest="save_plots", type=str, default=None, help="Pass in path to FOLDER to save plots.")
 parser.add_option("--save_imgs", dest="save_imgs", type=str, default=None, help="Pass in path to FOLDER to save images.")
 
@@ -398,6 +401,18 @@ if options.save_scales != None:
 
     sc = (S/S[0]).reshape((1, 1, 1, 1, 1, 1, len(S)))
     writecfl(os.path.join(options.save_scales, cfl_name), sc)
+
+if options.save_sim != None:
+    if options.verbose:
+        print options.sim_name
+
+    if options.sim_name != None:
+        npy_name = options.sim_name  
+    else:
+        npy_name = 'sim.' + m + timestamp
+
+    np.save(os.path.join(options.save_sim, npy_name), X)
+
 
 if options.build_phantom:
     if options.verbose:
