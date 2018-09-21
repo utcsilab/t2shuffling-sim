@@ -1,4 +1,3 @@
-from __future__ import division
 from epg import FSE_signal2
 
 try:
@@ -59,7 +58,7 @@ def gen_FSEmatrix(angles_rad, ETL, e2s, TE, T1vals, T2vals, TRvals=np.array([np.
 def gen_FSET1T2matrix(angles_rad, ETL, e2s, TE, T1T2vals, TRvals=np.array([np.inf]), driven_equil=False, fr_sign=-1, disp=True, par_jobs=8):
 
     if disp:
-        print "Generating FSE matrix"
+        print("Generating FSE matrix")
 
     args = (angles_rad, TE, TRvals, driven_equil, fr_sign, disp)
 
@@ -67,7 +66,7 @@ def gen_FSET1T2matrix(angles_rad, ETL, e2s, TE, T1T2vals, TRvals=np.array([np.in
 
     if par_jobs > 1:
         if disp:
-            print "Total tasks: %d" % L
+            print("Total tasks: %d" % L)
         X_full = joblib.Parallel(n_jobs=par_jobs, verbose=disp)(joblib.delayed(my_FSE_T1T2_fun)(args, T1T2) for T1T2 in T1T2vals)
     else:
         X_full = []
@@ -89,7 +88,7 @@ def gen_FSET1T2matrix(angles_rad, ETL, e2s, TE, T1T2vals, TRvals=np.array([np.in
     X_full = np.array(X_full).transpose((1, 0, 2))
 
     if disp:
-        print ""
+        print("")
 
     keep = range(e2s, e2s + ETL)
     return X_full[keep, :, :]

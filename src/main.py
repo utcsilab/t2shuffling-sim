@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-from __future__           import division
 from optparse             import OptionParser
 from os                   import system
 from models               import models_dict
@@ -118,9 +117,9 @@ if len(argv) == 1:
 if options.print_models:
     for key in models_dict:
         if models_dict[key].__doc__ is not None:
-            print '\t'.join(('"%s"' % key , models_dict[key].__doc__))
+            print('\t'.join(('"%s"' % key , models_dict[key].__doc__)))
         else:
-            print '"%s"' % key
+            print('"%s"' % key)
     exit(0)
 
 
@@ -209,8 +208,8 @@ elif options.genFSE:
     else:
         TRvals = np.array([np.inf])
 
-    print 'TRvals:'
-    print TRvals
+    print('TRvals:')
+    print(TRvals)
 
     if T1T2_mode:
         if T1T2vals.shape[0] > N:
@@ -250,7 +249,7 @@ elif options.genFSE:
 
     if options.saveFSE != None:
         if options.verbose:
-            print "Saving as " + options.saveFSE + time_stamp
+            print("Saving as " + options.saveFSE + time_stamp)
         if T1T2_mode:
             sio.savemat(options.saveFSE + time_stamp, {"X": X, "angles": angles, "N": N, "ETL": ETL, "e2s": e2s, "TE": TE, "T1T2vals": T1T2vals, "TRvals": TRvals})
         else:
@@ -273,11 +272,11 @@ else:
 
 if rvc == 'real':
     if options.verbose:
-        print 'real value constraint'
+        print('real value constraint')
     X = np.real(X)
 elif rvc == 'abs':
     if options.verbose:
-        print 'abs value constraint'
+        print('abs value constraint')
     X = np.abs(X)
 
 
@@ -289,9 +288,9 @@ if options.model == 'all':
 results = {}
 for m in lst:
     if options.verbose:
-        print "------------------------------------------------------------"
-        print "Running " + m
-        print "------------------------------------------------------------"
+        print("------------------------------------------------------------")
+        print("Running " + m)
+        print("------------------------------------------------------------")
     model = models_dict[m]
     k = options.k
     if options.varTR:
@@ -304,13 +303,13 @@ for m in lst:
     U, alpha, X_hat, S = model(X, options.k, rvc)
 
     if options.verbose:
-        print "Results:"
+        print("Results:")
     signal_perc_err, TE_perc_err, fro_perc_err = get_metric(X, X_hat, options.verbose)
     if not k:
         k = U.shape[1]
     results[m] = {'U': U, 'alpha': alpha, 'k': k, 'X_hat': X_hat, 'Percentage Error per Signal': signal_perc_err, 'Percentage Error per TE': TE_perc_err, 'Frobenius Percentage Error': fro_perc_err, 'S': S}
 if options.verbose:
-    print "------------------------------------------------------------"
+    print("------------------------------------------------------------")
 
 
 if options.save_plots != None:
@@ -330,9 +329,9 @@ if options.save_imgs != None:
 
 if options.contrast_synthesis:
     if options.verbose:
-        print "------------------------------------------------------------"
-        print "Computing contrast synthesis matrix"
-        print ""
+        print("------------------------------------------------------------")
+        print("Computing contrast synthesis matrix")
+        print("")
 
     Xe = gen_FSEmatrix(N, np.pi * np.ones(T), ETL, e2s, TE, T1vals, T2vals).reshape((ETL, -1))
     Xe = Xe[:, ~np.all(Xe == 0, axis=0)] # remove all-zero signals, for cases where T2 > T1
@@ -350,7 +349,7 @@ if options.contrast_synthesis:
         res['Q'] = Q
 
         if options.save_csynth != None:
-            print options.csynth_name
+            print(options.csynth_name)
 
             for i in range(5):
                 Q = np.expand_dims(Q, axis=0)
@@ -367,7 +366,7 @@ if options.contrast_synthesis:
 
 if options.save_basis != None:
     if options.verbose:
-        print options.basis_name
+        print(options.basis_name)
 
     for m in results.keys():
         U = results[m]["U"]
@@ -389,7 +388,7 @@ if options.save_basis != None:
 
 if options.save_scales != None:
     if options.verbose:
-        print options.scale_name
+        print(options.scale_name)
 
     for m in results.keys():
         S = results[m]["S"]
@@ -404,7 +403,7 @@ if options.save_scales != None:
 
 if options.save_sim != None:
     if options.verbose:
-        print options.sim_name
+        print(options.sim_name)
 
     if options.sim_name != None:
         npy_name = options.sim_name  
@@ -416,16 +415,16 @@ if options.save_sim != None:
 
 if options.build_phantom:
     if options.verbose:
-        print "------------------------------------------------------------"
-        print "Building Phantom"
-        print ""
+        print("------------------------------------------------------------")
+        print("Building Phantom")
+        print("")
     if options.phantom_data != None:
         if options.verbose:
-            print X.shape
-            print ETL
+            print(X.shape)
+            print(ETL)
         ksp = np.zeros((phantom_data.shape[0], phantom_data.shape[1], ETL), dtype='complex64')
         if options.verbose:
-            print ksp.shape
+            print(ksp.shape)
         imgs = Phantom.ifft2c(np.transpose(phantom_data, (1, 0, 2)))
         T2im = np.zeros(phantom_data.shape[:2])
         idx = np.random.permutation(N)
@@ -443,7 +442,7 @@ if options.build_phantom:
         P.knee_objects_relax(T2vals, X)
         ksp = np.fliplr(P.build_flipmod()[None, :, :, None, None, :])
     if options.verbose:
-        print "------------------------------------------------------------"
+        print("------------------------------------------------------------")
 
     if options.save_phantom != None:
         if options.phantom_name != None:

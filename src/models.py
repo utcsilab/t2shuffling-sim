@@ -1,4 +1,3 @@
-from __future__ import division
 import os
 
 IMPORT_ALL = False
@@ -83,7 +82,7 @@ def no_reg_grad_descent(X, k=None, rvc=None):
   for i in range(num_iters):
     alpha = inv(U.T * U) * U.T * X
     U = U - (l/m) * (U * alpha - X) * alpha.T
-#    print "   " + str(i+1) + "/" + str(num_iters)
+#    print("   " + str(i+1) + "/" + str(num_iters))
     
   U = rvc_U(U, rvc)
   alpha = compute_alpha(X, U, rvc)
@@ -113,7 +112,7 @@ def reg_grad_descent(X, k=None, rvc=None):
   for i in range(num_iters):
     alpha = inv(U.T * U + lmbda * L) * U.T * X
     U = U - (l/m) * (U * alpha - X) * alpha.T
-#    print "   " + str(i+1) + "/" + str(num_iters)
+#    print("   " + str(i+1) + "/" + str(num_iters))
     
   U = rvc_U(U, rvc)
   alpha = compute_alpha(X, U, rvc)
@@ -203,7 +202,7 @@ def batch_nn(X, k=None, rvc=None):
   alpha = compute_alpha(X, U, rvc)
 
   for i in range(global_iter):
-    print "Progress: %d / %d" % (i+1, global_iter) 
+    print("Progress: %d / %d" % (i+1, global_iter) )
     perc, fro = get_metric(X, U * alpha, disp=False)
     idx = np.argmax(perc, axis=0)
     if (idx < width):
@@ -265,7 +264,7 @@ def batch_nn_svd(X, k=None, rvc=None):
 
     past_perc, past_fro = np.max(perc), fro
 
-  print ""
+  print("")
 
   return U, alpha, np.dot(U[:, :k], alpha[:k]), (None)
   

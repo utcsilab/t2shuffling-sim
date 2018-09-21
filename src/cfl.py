@@ -80,7 +80,7 @@ def mat2sqcfl(mat, dim):
 
 
 def disp_sqcfl(sqcfl):
-  print "n - next, p - prev, e - escape"
+  print("n - next, p - prev, e - escape")
   fig = plt.figure() 
   ctr = 0
   T = sqcfl.shape[2]

@@ -1,6 +1,4 @@
-#!/usr/bin/python
-
-from __future__ import division
+#!/usr/bin/env python
 
 import numpy as np
 import scipy.special
@@ -204,7 +202,7 @@ def build_phantom(phantom, dims, oversamp=1, t2relax=None, t1relax=None, TR=1.4,
 def resample(img, dims, dims2, oversamp=1, verbose=False):
     if oversamp > 1:
         if verbose:
-            print 'Downsampling...'
+            print('Downsampling...')
         cen = [np.floor(d/2) for d in dims2]
         ksp = fft2c(img)
         ksp2 = ksp[cen[0] - np.floor(dims[0]/2) : cen[0] + np.floor(dims[0]/2),
