@@ -15,6 +15,7 @@ try:
     use_joblib = True
 except ImportError:
     use_joblib = False
+    warn('JobLib not found! setting par_jobs to 1')
 
 import imp
 import t2phantom as t2p
