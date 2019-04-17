@@ -65,12 +65,10 @@ def gen_FSET1T2matrix(angles_rad, ETL, e2s, TE, T1T2vals, TRvals=np.array([np.in
     L = T1T2vals.shape[0]
 
     if par_jobs > 1:
-        print('running par jobs')
         if disp:
             print("Total tasks: %d" % L)
         X_full = joblib.Parallel(n_jobs=par_jobs, verbose=disp)(joblib.delayed(my_FSE_T1T2_fun)(args, T1T2) for T1T2 in T1T2vals)
     else:
-        print('not running par jobs')
         X_full = []
 
         for i0, T1T2 in enumerate(T1T2vals):
@@ -78,7 +76,6 @@ def gen_FSET1T2matrix(angles_rad, ETL, e2s, TE, T1T2vals, TRvals=np.array([np.in
             T1 = T1T2[0]
             T2 = T1T2[1]
 
-            #args = (angles_rad, TE, TRvals, driven_equil, disp)
             vars = (T1, T2)
 
             X_full.append(my_FSE_T1T2_fun(args, vars))
